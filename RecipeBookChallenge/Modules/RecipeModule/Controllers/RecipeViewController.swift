@@ -37,6 +37,16 @@ class RecipeViewController: UIViewController {
 		button.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
 		return button
 	}()
+    
+    private lazy var recipeColectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 10
+        let colection = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
+        colection.backgroundColor = .black
+        return colection
+    }()
 	
 	private lazy var caloriesLabel = UILabel.recipeTopItemLabel
 	private lazy var timeLabel = UILabel.recipeTopItemLabel
@@ -62,19 +72,16 @@ class RecipeViewController: UIViewController {
 		difficultLabel.text = "Easy"
 		servesLabel.text = "Serves 2"
 		
-		recipeDescriptionStackView = UIStackView(arrangedSubviews:
-													[caloriesLabel,
-													 timeLabel,
-													 difficultLabel,
-													 servesLabel
-													],
-												 axis: .horizontal,
-												 spacing: 10)
+		recipeDescriptionStackView = UIStackView(arrangedSubviews:[caloriesLabel, timeLabel, difficultLabel, servesLabel], axis: .horizontal, spacing: 10)
 		recipeDescriptionStackView.distribution = .equalSpacing
+        
+
+        
 		view.addSubview(recipeTitleLabel)
 		view.addSubview(recipeImageView)
 		view.addSubview(favoriteButton)
 		view.addSubview(recipeDescriptionStackView)
+        view.addSubview(recipeColectionView)
 	}
 	
 	@objc
@@ -109,5 +116,14 @@ class RecipeViewController: UIViewController {
 			recipeDescriptionStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
 			recipeDescriptionStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
 		])
+        recipeColectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            recipeColectionView.topAnchor.constraint(equalTo: recipeDescriptionStackView.bottomAnchor, constant: 20),
+            recipeColectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            recipeColectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+        ])
 	}
 }
+
+
+
