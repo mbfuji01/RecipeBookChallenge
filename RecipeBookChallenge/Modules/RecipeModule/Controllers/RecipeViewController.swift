@@ -45,6 +45,7 @@ class RecipeViewController: UIViewController {
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
         let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
+		collectionView.showsVerticalScrollIndicator = false
         return collectionView
     }()
 	
@@ -135,7 +136,7 @@ class RecipeViewController: UIViewController {
 
 extension RecipeViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		4
+		15
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
