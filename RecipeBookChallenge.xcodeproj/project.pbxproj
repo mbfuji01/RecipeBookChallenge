@@ -331,6 +331,7 @@
 		1882E6CF29AF78A100E4F948 /* RecipeModule */ = {
 			isa = PBXGroup;
 			children = (
+				1882E6D529AF837700E4F948 /* Views */,
 				1882E6D029AF78AC00E4F948 /* Controllers */,
 			);
 			path = RecipeModule;
@@ -342,6 +343,13 @@
 				1882E6D129AF78C700E4F948 /* RecipeViewController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		1882E6D529AF837700E4F948 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		540E52D629ACCAF2008EF139 /* Common */ = {

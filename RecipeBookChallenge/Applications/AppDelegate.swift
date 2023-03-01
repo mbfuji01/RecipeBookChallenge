@@ -22,7 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
 		window = UIWindow(frame: UIScreen.main.bounds)
-		let navigationVc = UINavigationController(rootViewController: rootViewController)
+//		let navigationVc = UINavigationController(rootViewController: rootViewController)
+		let navigationVc = UINavigationController(rootViewController: RecipeViewController())
 		navigationVc.isNavigationBarHidden = true
 		window?.rootViewController = navigationVc
 		window?.makeKeyAndVisible()
