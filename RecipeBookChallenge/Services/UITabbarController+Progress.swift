@@ -30,14 +30,16 @@ class MainTabBarController: UITabBarController {
 		let mainVC = MainViewController()
 		let categoriesVC = CategoriesViewController()
 		let favoriteVC = FavoriteViewController()
+		let searchVC = SearchViewController()
 		
-		setViewControllers([mainVC, categoriesVC, favoriteVC], animated: true)
+		setViewControllers([mainVC, categoriesVC, favoriteVC, searchVC], animated: true)
 		
 		guard let items = tabBar.items else { return }
 		
 		items[0].title = "Main"
 		items[1].title = "Categories"
 		items[2].title = "Favorites"
+		items[3].title = "Search"
 		
 //		items[0].image = UIImage(named: "")
 //		items[1].image = UIImage(named: "")
