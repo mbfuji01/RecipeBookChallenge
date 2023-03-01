@@ -21,8 +21,8 @@ class MainTabBarController: UITabBarController {
 		tabBar.backgroundColor = .white
 		tabBar.tintColor = .black
 		tabBar.unselectedItemTintColor = .gray
-		tabBar.layer.borderWidth = 1
-		tabBar.layer.borderColor = UIColor.black.cgColor
+//		tabBar.layer.borderWidth = 1
+//		tabBar.layer.borderColor = UIColor.black.cgColor
 	}
 	
 	private func setupItems() {
@@ -36,14 +36,10 @@ class MainTabBarController: UITabBarController {
 		
 		guard let items = tabBar.items else { return }
 		
-		items[0].title = "Main"
-		items[1].title = "Categories"
-		items[2].title = "Favorites"
-		items[3].title = "Search"
-		
-//		items[0].image = UIImage(named: "")
-//		items[1].image = UIImage(named: "")
-//		items[2].image = UIImage(named: "")
+		items[0].image = UIImage(named: "tabBar_main")
+		items[1].image = UIImage(named: "tabBar_categories")
+		items[2].image = UIImage(named: "tabBar_favorites")
+		items[3].image = UIImage(named: "tabBar_search")
 		
 		UITabBarItem.appearance().setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 12, weight: .semibold) as Any], for: .normal)
 	}

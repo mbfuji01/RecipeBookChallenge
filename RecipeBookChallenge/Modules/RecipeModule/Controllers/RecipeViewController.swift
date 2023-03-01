@@ -11,6 +11,7 @@ import UIKit
 class RecipeViewController: UIViewController {
 	enum Constants {
 		static let welcomeToChallenge: String = "welcome to challenge" // Пример заполнения данных в константы, удалить строку при начале работы с контроллером
+		static let recipeCell: String = "cell"
 	}
 	
 	//MARK: - Create UI
@@ -38,14 +39,13 @@ class RecipeViewController: UIViewController {
 		return button
 	}()
     
-    private lazy var recipeColectionView: UICollectionView = {
+    private lazy var recipeCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.minimumInteritemSpacing = 10
-        layout.minimumLineSpacing = 10
-        let colection = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
-        colection.backgroundColor = .black
-        return colection
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
+        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
+        return collectionView
     }()
 	
 	private lazy var caloriesLabel = UILabel.recipeTopItemLabel
@@ -61,6 +61,8 @@ class RecipeViewController: UIViewController {
 		super.viewDidLoad()
 		setupViews()
 		setConstraints()
+		setDelegates()
+		recipeCollectionView.register(RecipeCollectionViewCell.self, forCellWithReuseIdentifier: Constants.recipeCell)
 	}
 	
 	private func setupViews() {
@@ -81,7 +83,12 @@ class RecipeViewController: UIViewController {
 		view.addSubview(recipeImageView)
 		view.addSubview(favoriteButton)
 		view.addSubview(recipeDescriptionStackView)
-        view.addSubview(recipeColectionView)
+        view.addSubview(recipeCollectionView)
+	}
+	
+	private func setDelegates() {
+		recipeCollectionView.dataSource = self
+		recipeCollectionView.delegate = self
 	}
 	
 	@objc
@@ -116,12 +123,28 @@ class RecipeViewController: UIViewController {
 			recipeDescriptionStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
 			recipeDescriptionStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
 		])
-        recipeColectionView.translatesAutoresizingMaskIntoConstraints = false
+		recipeCollectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            recipeColectionView.topAnchor.constraint(equalTo: recipeDescriptionStackView.bottomAnchor, constant: 20),
-            recipeColectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            recipeColectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+			recipeCollectionView.topAnchor.constraint(equalTo: recipeDescriptionStackView.bottomAnchor, constant: 20),
+			recipeCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+			recipeCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+			recipeCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10)
         ])
+	}
+}
+
+extension RecipeViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		4
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.recipeCell, for: indexPath) as! RecipeCollectionViewCell
+		return cell
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+		return CGSize(width: collectionView.frame.size.width, height: 50)
 	}
 }
 
