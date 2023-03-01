@@ -11,13 +11,13 @@ import UIKit
 class RecipeCollectionViewCell: UICollectionViewCell {
 	
 	//MARK: - Create UI
-	
+    var recipeManager = RecipeManager()
+
 	private lazy var ingredientsNameLabel = UILabel.recipeItemLabel
 	private lazy var amountLabel = UILabel.recipeItemLabel
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		setupViews()
 		setConstraints()
 	}
 	
@@ -25,10 +25,12 @@ class RecipeCollectionViewCell: UICollectionViewCell {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
-	private func setupViews() {
+    private func setupViews(model: RecipeModel) {
+        recipeManager.delegate = self
+        recipeManager.fetchRecipe()
+        ingredientsNameLabel.text = model.ingridientName[0]
+        amountLabel.text = model.ingridiendAmount[0]
 		backgroundColor = .white
-		ingredientsNameLabel.text = "Sugar"
-		amountLabel.text = "280g"
 		addSubview(ingredientsNameLabel)
 		addSubview(amountLabel)
 	}
@@ -45,4 +47,18 @@ class RecipeCollectionViewCell: UICollectionViewCell {
 			amountLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
 		])
 	}
+}
+
+extension RecipeCollectionViewCell: RecipeManagerDelegate {
+    func didRecipe(recipeManager: RecipeManager, recipe: RecipeModel) {
+        DispatchQueue.main.async {
+            let a1 = recipe.ingridientName
+            let a2 = recipe.ingridiendAmount
+          print(a1)
+          print(a2)
+
+        }
+    }
+    
+    
 }

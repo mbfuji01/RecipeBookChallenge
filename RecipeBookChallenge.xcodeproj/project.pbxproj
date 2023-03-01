@@ -40,6 +40,9 @@
 		540E52FD29ACF5B4008EF139 /* RecentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540E52FC29ACF5B4008EF139 /* RecentCollectionViewCell.swift */; };
 		540E530029ACFA85008EF139 /* PopularCreatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540E52FF29ACFA85008EF139 /* PopularCreatorView.swift */; };
 		540E530329ACFAC8008EF139 /* PCCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540E530229ACFAC8008EF139 /* PCCollectionViewCell.swift */; };
+		CEBF5E6629AFA6F1004CE91F /* RecipeModelDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBF5E6529AFA6F1004CE91F /* RecipeModelDecoder.swift */; };
+		CEBF5E6929AFB09B004CE91F /* RecipeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBF5E6829AFB09B004CE91F /* RecipeModel.swift */; };
+		CEBF5E6B29AFB1DF004CE91F /* RecipeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBF5E6A29AFB1DF004CE91F /* RecipeManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -78,6 +81,9 @@
 		540E52FC29ACF5B4008EF139 /* RecentCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentCollectionViewCell.swift; sourceTree = "<group>"; };
 		540E52FF29ACFA85008EF139 /* PopularCreatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularCreatorView.swift; sourceTree = "<group>"; };
 		540E530229ACFAC8008EF139 /* PCCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCCollectionViewCell.swift; sourceTree = "<group>"; };
+		CEBF5E6529AFA6F1004CE91F /* RecipeModelDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModelDecoder.swift; sourceTree = "<group>"; };
+		CEBF5E6829AFB09B004CE91F /* RecipeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeModel.swift; sourceTree = "<group>"; };
+		CEBF5E6A29AFB1DF004CE91F /* RecipeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -333,6 +339,7 @@
 		1882E6CF29AF78A100E4F948 /* RecipeModule */ = {
 			isa = PBXGroup;
 			children = (
+				CEBF5E6729AFA6F7004CE91F /* Model */,
 				1882E6D529AF837700E4F948 /* Views */,
 				1882E6D029AF78AC00E4F948 /* Controllers */,
 			);
@@ -477,6 +484,16 @@
 			path = PCCollectionViewCell;
 			sourceTree = "<group>";
 		};
+		CEBF5E6729AFA6F7004CE91F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				CEBF5E6529AFA6F1004CE91F /* RecipeModelDecoder.swift */,
+				CEBF5E6829AFB09B004CE91F /* RecipeModel.swift */,
+				CEBF5E6A29AFB1DF004CE91F /* RecipeManager.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -554,6 +571,7 @@
 				180A7EFE29AB6A2F00B3081B /* UIView + Extensions.swift in Sources */,
 				540E530029ACFA85008EF139 /* PopularCreatorView.swift in Sources */,
 				540E52ED29ACCEEA008EF139 /* CategoryCollectionViewCell.swift in Sources */,
+				CEBF5E6B29AFB1DF004CE91F /* RecipeManager.swift in Sources */,
 				180A7EFF29AB6A2F00B3081B /* UIStackView + Extensions.swift in Sources */,
 				540E52E629ACCB41008EF139 /* TrendViewModel.swift in Sources */,
 				1882E6D229AF78C700E4F948 /* RecipeViewController.swift in Sources */,
@@ -569,12 +587,14 @@
 				180A7F1F29AB745D00B3081B /* MainViewController.swift in Sources */,
 				180A7F3D29AB77A200B3081B /* UserProvider.swift in Sources */,
 				540E52E229ACCB28008EF139 /* TrendCollectionViewCell.swift in Sources */,
+				CEBF5E6929AFB09B004CE91F /* RecipeModel.swift in Sources */,
 				180A7F0D29AB716900B3081B /* UITabbarController+Progress.swift in Sources */,
 				540E52EA29ACCEA2008EF139 /* PopularCategoryView.swift in Sources */,
 				540E52E529ACCB41008EF139 /* MainBrain.swift in Sources */,
 				1882E6CE29AF781300E4F948 /* SearchViewController.swift in Sources */,
 				180A7F2629AB749700B3081B /* FavoriteViewController.swift in Sources */,
 				540E52F429ACDF58008EF139 /* CategoryItemView.swift in Sources */,
+				CEBF5E6629AFA6F1004CE91F /* RecipeModelDecoder.swift in Sources */,
 				540E52FD29ACF5B4008EF139 /* RecentCollectionViewCell.swift in Sources */,
 				540E52F729ACDFCF008EF139 /* CategoryItemCVCell.swift in Sources */,
 				180A7F0B29AB6F4D00B3081B /* SplashViewController.swift in Sources */,

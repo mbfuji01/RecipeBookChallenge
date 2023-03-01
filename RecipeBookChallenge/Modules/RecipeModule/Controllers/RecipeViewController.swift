@@ -55,6 +55,7 @@ class RecipeViewController: UIViewController {
 	private lazy var servesLabel = UILabel.recipeTopItemLabel
 	
 	private lazy var recipeDescriptionStackView = UIStackView()
+
 	
 	//MARK: - Lifecycle
 	
@@ -64,6 +65,7 @@ class RecipeViewController: UIViewController {
 		setConstraints()
 		setDelegates()
 		recipeCollectionView.register(RecipeCollectionViewCell.self, forCellWithReuseIdentifier: Constants.recipeCell)
+       
 	}
 	
 	private func setupViews() {
@@ -141,6 +143,7 @@ extension RecipeViewController: UICollectionViewDelegate, UICollectionViewDataSo
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.recipeCell, for: indexPath) as! RecipeCollectionViewCell
+        
 		return cell
 	}
 	
