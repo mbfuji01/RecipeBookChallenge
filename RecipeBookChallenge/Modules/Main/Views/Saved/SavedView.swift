@@ -1,5 +1,5 @@
 //
-//  PopularCreatorView.swift
+//  SavedView.swift
 //  RecipeBookChallenge
 //
 //  Created by Сергей Золотухин on 27.02.2023.
@@ -7,22 +7,22 @@
 
 import UIKit
 
-final class PopularCreatorView: UIView {
+final class SavedView: UIView {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 110, height: 136)
-        layout.minimumLineSpacing = 10
+        layout.itemSize = CGSize(width: 180, height: 210)
+        layout.minimumLineSpacing = 7
         layout.minimumInteritemSpacing = 0
         layout.scrollDirection = .horizontal
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.contentInsetAdjustmentBehavior = .always
         collectionView.bounces = false
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.register(PCCollectionViewCell.self, forCellWithReuseIdentifier: "PCCollectionViewCell")
+        collectionView.register(SavedCollectionViewCell.self, forCellWithReuseIdentifier: "SavedCollectionViewCell")
         return collectionView
     }()
     
@@ -36,24 +36,24 @@ final class PopularCreatorView: UIView {
     }
 }
 
-extension PopularCreatorView: UICollectionViewDelegate {
+extension SavedView: UICollectionViewDelegate {
     
 }
 
-extension PopularCreatorView: UICollectionViewDataSource {
+extension SavedView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         10
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PCCollectionViewCell", for: indexPath) as? PCCollectionViewCell else { fatalError("") }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SavedCollectionViewCell", for: indexPath) as? SavedCollectionViewCell else { fatalError("") }
         cell.configureCell()
         return cell
     }
 }
 
-private extension PopularCreatorView {
+private extension SavedView {
     func setupView() {
         addSubviews()
         setConstraints()

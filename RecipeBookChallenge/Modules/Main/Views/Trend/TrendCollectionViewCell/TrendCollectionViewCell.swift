@@ -15,14 +15,14 @@ final class TrendCollectionViewCell: UICollectionViewCell {
         $0.image = UIImage(named: "trendImage")
     }
     
-    private let rateEmptyLabel = make(UILabel()) {
-        $0.text = " "
-        $0.numberOfLines = 0
-    }
+//    private let rateEmptyLabel = make(UILabel()) {
+//        $0.text = " "
+//        $0.numberOfLines = 0
+//    }
     
     private let rateImageView = make(UIImageView()) {
         $0.clipsToBounds = true
-        $0.image = UIImage(systemName: "star.fill")
+        $0.image = UIImage(systemName: "hand.thumbsup.fill")
         $0.tintColor = .black
     }
     
@@ -54,6 +54,7 @@ final class TrendCollectionViewCell: UICollectionViewCell {
         $0.numberOfLines = 0
         $0.backgroundColor = .lightGray
         $0.layer.cornerRadius = 7
+        $0.clipsToBounds = true
     }
     
     private let descriptionLabel = make(UILabel()) {
@@ -76,23 +77,11 @@ final class TrendCollectionViewCell: UICollectionViewCell {
         $0.axis = .horizontal
     }
     
-    private let creatorImageView = make(UIImageView()) {
-        $0.clipsToBounds = true
-        $0.image = UIImage(named: "Creator")
-    }
-    
-    private let creatorDescriptionLabel = make(UILabel()) {
-        $0.text = "By Zeelicious foodse"
+    private let subDescriptionLabel = make(UILabel()) {
+        $0.text = "dinner, main dish"
         $0.numberOfLines = 0
-        $0.font = UIFont.systemFont(ofSize: 12)
         $0.textColor = .lightGray
-    }
-    
-    private let creatorStackView = make(UIStackView()) {
-        $0.spacing = 5
-        $0.distribution = .fill
-        $0.alignment = .trailing
-        $0.axis = .horizontal
+        $0.font = UIFont.systemFont(ofSize: 12)
     }
     
     private let mainStackView = make(UIStackView()) {
@@ -110,8 +99,19 @@ final class TrendCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell() {
-        mainImageView.backgroundColor = .clear
+//    func configureCell(with model: TrendModel) {
+//        descriptionLabel.text = model.title
+//        mainImageView.downloaded(from: model.image)
+//    }
+    
+    func configureCell(with model: DetailResponseModel) {
+        descriptionLabel.text = model.title
+        durationLabel.text = " \(Int(model.readyInMinutes)) mins "
+        rateLabel.text = "\(model.aggregateLikes) "
+        mainImageView.downloaded(from: model.image)
+        
+        let dishString = model.dishTypes.joined(separator: ", ")
+        subDescriptionLabel.text = "\(dishString)"
     }
     
     @objc
@@ -128,19 +128,16 @@ final class TrendCollectionViewCell: UICollectionViewCell {
 private extension TrendCollectionViewCell {
     func setupCell() {
         
-        rateStackView.addArrangedSubview(rateEmptyLabel)
+//        rateStackView.addArrangedSubview(rateEmptyLabel)
         rateStackView.addArrangedSubview(rateImageView)
         rateStackView.addArrangedSubview(rateLabel)
         
         descriptionStackView.addArrangedSubview(descriptionLabel)
         descriptionStackView.addArrangedSubview(moreButton)
         
-        creatorStackView.addArrangedSubview(creatorImageView)
-        creatorStackView.addArrangedSubview(creatorDescriptionLabel)
-        
         mainStackView.addArrangedSubview(mainImageView)
         mainStackView.addArrangedSubview(descriptionStackView)
-        mainStackView.addArrangedSubview(creatorStackView)
+        mainStackView.addArrangedSubview(subDescriptionLabel)
         
         contentView.myAddSubView(mainStackView)
         contentView.myAddSubView(rateStackView)
@@ -161,6 +158,9 @@ private extension TrendCollectionViewCell {
             
             durationLabel.bottomAnchor.constraint(equalTo: mainImageView.bottomAnchor, constant: -10),
             durationLabel.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: -10),
+            
+            mainImageView.heightAnchor.constraint(equalToConstant: 180),
+            mainImageView.widthAnchor.constraint(equalToConstant: 280),
             
             moreButton.widthAnchor.constraint(equalToConstant: 40)
         ])
