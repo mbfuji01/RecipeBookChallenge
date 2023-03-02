@@ -9,22 +9,10 @@ import UIKit
 
 final class MainViewController: UIViewController {
     
-    private let scrollView = make(UIScrollView()) {
-        $0.backgroundColor = .clear
-    }
-    
-    private let backgroundView = make(UIView()) {
-        $0.backgroundColor = .clear
-    }
-    
     private let titleLabel = make(UILabel()) {
         $0.font = UIFont.boldSystemFont(ofSize: 24)
         $0.numberOfLines = 0
         $0.text = "Get amazing recipes for cooking"
-    }
-    
-    private lazy var searchBar = make(UISearchBar()) {
-        $0.placeholder = "Search recipes"
     }
     
     private let trendLabel = make(UILabel()) {
@@ -35,7 +23,7 @@ final class MainViewController: UIViewController {
     
     private lazy var seeAllButton: UIButton = {
         let button = UIButton(type: .system)
-        button.addTarget(self, action: #selector(didTapSeeAllButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapSeeAllTrendsButton), for: .touchUpInside)
         button.setTitle("See all", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         button.tintColor = .red
@@ -48,49 +36,22 @@ final class MainViewController: UIViewController {
         $0.axis = .horizontal
     }
     
-    private let popularCategoryLabel = make(UILabel()) {
-        $0.text = "Popular category "
+    private let savedLabel = make(UILabel()) {
+        $0.text = "Saved recipe"
         $0.numberOfLines = 0
         $0.font = UIFont.boldSystemFont(ofSize: 20)
     }
     
-    private let recentLabel = make(UILabel()) {
-        $0.text = "Recent recipe"
-        $0.numberOfLines = 0
-        $0.font = UIFont.boldSystemFont(ofSize: 20)
-    }
-    
-    private lazy var seeAllrecentButton: UIButton = {
+    private lazy var seeAllsavedButton: UIButton = {
         let button = UIButton(type: .system)
-        button.addTarget(self, action: #selector(didTapSeeAllrecentButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapSeeAllsavedButton), for: .touchUpInside)
         button.setTitle("See all", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         button.tintColor = .red
         return button
     }()
     
-    private let recentStackView = make(UIStackView()) {
-        $0.spacing = 1
-        $0.distribution = .fill
-        $0.axis = .horizontal
-    }
-    
-    private let popularCreatorsLabel = make(UILabel()) {
-        $0.text = "Popular creators"
-        $0.numberOfLines = 0
-        $0.font = UIFont.boldSystemFont(ofSize: 20)
-    }
-    
-    private lazy var seeAllpopularCreatorsButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.addTarget(self, action: #selector(didTapSeeAllpopularCreatorsButton), for: .touchUpInside)
-        button.setTitle("See all", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        button.tintColor = .red
-        return button
-    }()
-    
-    private let popularCreatorsStackView = make(UIStackView()) {
+    private let savedStackView = make(UIStackView()) {
         $0.spacing = 1
         $0.distribution = .fill
         $0.axis = .horizontal
@@ -103,57 +64,63 @@ final class MainViewController: UIViewController {
     }
     
     private let trendView = TrendView()
-    
-    private lazy var popularCategoryView = make(PopularCategoryView()) {
-        $0.delegate = self
-    }
-    
-    private let categoryItemView = CategoryItemView()
-    private let recentView = RecentView()
-    private let popularCreatorView = PopularCreatorView()
-    
+    private let savedView = SavedView()
     private let mainBrain = MainBrain()
+    
+    private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewController()
+        fetchTrendsAsync()
     }
     
     @objc
-    private func didTapSeeAllButton() {
+    private func didTapSeeAllTrendsButton() {
         print(#function)
     }
     
     @objc
-    private func didTapSeeAllrecentButton() {
+    private func didTapSeeAllsavedButton() {
         print(#function)
-    }
-    
-    @objc
-    private func didTapSeeAllpopularCreatorsButton() {
-        print(#function)
-    }
-}
-
-extension MainViewController: PopularCategoryViewDelegate {
-    func didTapCell(at index: Int) {
-        var models = mainBrain.models
-        models.enumerated().forEach { modelIndex, modelValue in
-            if modelIndex == index {
-                models[modelIndex].isSelected = true
-            } else {
-                models[modelIndex].isSelected = false
-            }
-        }
-        
-        let viewModel = models.map {
-            CategoryCellViewModel(title: $0.title, isSelected: $0.isSelected)
-        }
-        popularCategoryView.configureCollectionView(with: viewModel)
     }
 }
 
 private extension MainViewController {
+    func fetchTrendsAsync() {
+        Task(priority: .utility) {
+            do {
+                let trends = try await apiService.fetchTrendssAsync()
+                await MainActor.run(body: {
+                    trendView.configureTrendView(with: trends)
+                })
+            } catch {
+                await MainActor.run(body: {
+                    print(error, error.localizedDescription)
+                })
+            }
+        }
+    }
+    
+//    func fetchTrendsAsync() {
+//        Task(priority: .utility) {
+//            do {
+//                let trends = try await apiService.fetchTrendssAsync()
+//                await MainActor.run(body: {
+//                    trends.results.forEach({ element in
+//                        idArray.append(element.id)
+//                    })
+//                    print(idArray)
+//                    trendView.configureTrendView(with: trends)
+//                })
+//            } catch {
+//                await MainActor.run(body: {
+//                    print(error, error.localizedDescription)
+//                })
+//            }
+//        }
+//    }
+ 
     func setupViewController() {
         view.backgroundColor = .white
         addSubviews()
@@ -164,54 +131,30 @@ private extension MainViewController {
         trendStackView.addArrangedSubview(trendLabel)
         trendStackView.addArrangedSubview(seeAllButton)
         
-        recentStackView.addArrangedSubview(recentLabel)
-        recentStackView.addArrangedSubview(seeAllrecentButton)
-        
-        popularCreatorsStackView.addArrangedSubview(popularCreatorsLabel)
-        popularCreatorsStackView.addArrangedSubview(seeAllpopularCreatorsButton)
+        savedStackView.addArrangedSubview(savedLabel)
+        savedStackView.addArrangedSubview(seeAllsavedButton)
         
         mainStackView.addArrangedSubview(titleLabel)
-        mainStackView.addArrangedSubview(searchBar)
         mainStackView.addArrangedSubview(trendStackView)
         mainStackView.addArrangedSubview(trendView)
-        mainStackView.addArrangedSubview(popularCategoryLabel)
-        mainStackView.addArrangedSubview(popularCategoryView)
-        mainStackView.addArrangedSubview(categoryItemView)
-        mainStackView.addArrangedSubview(recentStackView)
-        mainStackView.addArrangedSubview(recentView)
-        mainStackView.addArrangedSubview(popularCreatorsStackView)
-        mainStackView.addArrangedSubview(popularCreatorView)
+        mainStackView.addArrangedSubview(savedStackView)
+        mainStackView.addArrangedSubview(savedView)
         
-        view.myAddSubView(scrollView)
-        scrollView.myAddSubView(backgroundView)
-        backgroundView.myAddSubView(mainStackView)
+        view.myAddSubView(mainStackView)
     }
     
     func setConstraints() {
         NSLayoutConstraint.activate([
             
-            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            mainStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            mainStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            mainStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            mainStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            backgroundView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            backgroundView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            backgroundView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            backgroundView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            
-            mainStackView.topAnchor.constraint(equalTo: backgroundView.topAnchor),
-            mainStackView.trailingAnchor.constraint(equalTo: backgroundView.trailingAnchor, constant: -16),
-            mainStackView.leadingAnchor.constraint(equalTo: backgroundView.leadingAnchor, constant: 16),
-            mainStackView.bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor),
-            
-            trendView.heightAnchor.constraint(equalToConstant: 298),
-            categoryItemView.heightAnchor.constraint(equalToConstant: 251),
-            recentView.heightAnchor.constraint(equalToConstant: 230),
-            popularCreatorView.heightAnchor.constraint(equalToConstant: 150),
+            trendView.heightAnchor.constraint(equalToConstant: 280),
+            savedView.heightAnchor.constraint(equalToConstant: 230),
             seeAllButton.widthAnchor.constraint(equalToConstant: 65),
-            seeAllrecentButton.widthAnchor.constraint(equalToConstant: 65),
-            seeAllpopularCreatorsButton.widthAnchor.constraint(equalToConstant: 65)
+            seeAllsavedButton.widthAnchor.constraint(equalToConstant: 65)
         ])
     }
 }

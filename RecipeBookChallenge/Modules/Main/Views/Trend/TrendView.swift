@@ -11,11 +11,11 @@ final class TrendView: UIView {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 280, height: 254)
-        layout.minimumLineSpacing = 10
+        layout.itemSize = CGSize(width: 280, height: 268)
+        layout.minimumLineSpacing = 20
         layout.minimumInteritemSpacing = 0
         layout.scrollDirection = .horizontal
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -26,6 +26,13 @@ final class TrendView: UIView {
         return collectionView
     }()
     
+    var viewModel: TrendResponseModel?
+    
+    private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
+    
+    private var idArray: [Int] = []
+    private var detailModels: [DetailResponseModel] = []
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -35,6 +42,28 @@ final class TrendView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+//    func configureTrendView(with model: TrendResponseModel) {
+//        viewModel = model
+//        collectionView.reloadData()
+//    }
+    
+    func configureTrendView(with model: TrendResponseModel) {
+        model.results.forEach { element in
+            Task(priority: .utility) {
+                do {
+                    let detail = try await apiService.fetchDetailForTrendsAsync(id: element.id)
+                    detailModels.append(detail)
+                    await MainActor.run(body: {
+                        collectionView.reloadData()
+                    })
+                } catch {
+                    await MainActor.run(body: {
+                        print(error, error.localizedDescription)
+                    })
+                }
+            }
+        }
+    }
 }
 
 extension TrendView: UICollectionViewDelegate {
@@ -43,13 +72,19 @@ extension TrendView: UICollectionViewDelegate {
 
 extension TrendView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        10
+//        viewModel?.results.count ?? 0
+        detailModels.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TrendCollectionViewCell", for: indexPath) as? TrendCollectionViewCell else { fatalError("") }
-        cell.configureCell()
+        
+//        guard let model: TrendModel = self.viewModel?.results[indexPath.item] else { return UICollectionViewCell()
+//        }
+        let model: DetailResponseModel = self.detailModels[indexPath.item]
+        
+        cell.configureCell(with: model)
         return cell
     }
 }
