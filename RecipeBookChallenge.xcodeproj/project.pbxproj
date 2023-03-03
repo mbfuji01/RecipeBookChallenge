@@ -353,6 +353,7 @@
 		1882E6D529AF837700E4F948 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1882E6D629AF9F7400E4F948 /* RecipeCollectionViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
