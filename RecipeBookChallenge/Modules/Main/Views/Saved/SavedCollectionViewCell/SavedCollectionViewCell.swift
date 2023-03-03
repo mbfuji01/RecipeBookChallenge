@@ -1,5 +1,5 @@
 //
-//  RecentCollectionViewCell.swift
+//  SavedCollectionViewCell.swift
 //  RecipeBookChallenge
 //
 //  Created by Сергей Золотухин on 27.02.2023.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class RecentCollectionViewCell: UICollectionViewCell {
+final class SavedCollectionViewCell: UICollectionViewCell {
     
     private let mainImageView = make(UIImageView()) {
         $0.clipsToBounds = true
@@ -22,13 +22,13 @@ final class RecentCollectionViewCell: UICollectionViewCell {
         $0.numberOfLines = 0
     }
     
-    private let creatorLabel = make(UILabel()) {
-        $0.text = "By Zeelicious foodse"
+    private let subDescriptionLabel = make(UILabel()) {
+        $0.text = "dinner, main dish"
         $0.numberOfLines = 0
-        $0.font = UIFont.systemFont(ofSize: 12)
         $0.textColor = .lightGray
+        $0.font = UIFont.systemFont(ofSize: 12)
     }
- 
+    
     private let mainStackView = make(UIStackView()) {
         $0.spacing = 5
         $0.distribution = .fill
@@ -49,11 +49,11 @@ final class RecentCollectionViewCell: UICollectionViewCell {
     }
 }
 
-private extension RecentCollectionViewCell {
+private extension SavedCollectionViewCell {
     func setupCell() {
         mainStackView.addArrangedSubview(mainImageView)
         mainStackView.addArrangedSubview(descriptionLabel)
-        mainStackView.addArrangedSubview(creatorLabel)
+        mainStackView.addArrangedSubview(subDescriptionLabel)
         
         contentView.myAddSubView(mainStackView)
         
@@ -62,7 +62,10 @@ private extension RecentCollectionViewCell {
             mainStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,
                                                     constant: -10),
             mainStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-            mainStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10)
+            mainStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            
+            mainImageView.heightAnchor.constraint(equalToConstant: 124),
+            mainImageView.widthAnchor.constraint(equalToConstant: 124)
         ])
     }
 }
