@@ -573,6 +573,7 @@
 				540E52FA29ACF57B008EF139 /* RecentView.swift in Sources */,
 				CE774ED129B0E942002C50B8 /* TableVC.swift in Sources */,
 				180A7F0529AB6AB400B3081B /* UIButton+App.swift in Sources */,
+				1882E6D729AF9F7400E4F948 /* RecipeCollectionViewCell.swift in Sources */,
 				180A7F2129AB747400B3081B /* CategoriesViewController.swift in Sources */,
 				540E52E129ACCB28008EF139 /* TrendView.swift in Sources */,
 				CE774ECF29B0E7E2002C50B8 /* TableModel.swift in Sources */,
