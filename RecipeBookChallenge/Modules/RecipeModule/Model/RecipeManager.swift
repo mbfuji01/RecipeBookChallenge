@@ -8,7 +8,7 @@
 import Foundation
 
 protocol RecipeManagerDelegate {
-    func didRecipe (recipeManager: RecipeManager, recipe: RecipeModel)
+    func fetchRecipe()
 }
 
 struct RecipeManager {
@@ -16,13 +16,15 @@ struct RecipeManager {
     
     var delegate: RecipeManagerDelegate?
     
-    func fetchRecipe() {
+
+    
+    mutating func fetchRecipe() {
         let url = "https://api.spoonacular.com/recipes/71642/ingredientWidget.json?apiKey=fc647a0143de42fb86cb50986d620f4c"
         getPerform(url: url)
     }
     
     
-    func getPerform(url: String) {
+func getPerform(url: String) {
         if let url1 = URL(string: url) {
             let session = URLSession(configuration: .default)
             let task = session.dataTask(with: url1) { data, response, error in
@@ -30,28 +32,19 @@ struct RecipeManager {
                     print("error")
                 }
                 if let safeData = data {
-                    let recipe = parserJson(recipeData: safeData)
-                    delegate?.didRecipe(recipeManager: self, recipe: recipe!)
+                  let  recipe = parserJson(recipeData: safeData)
                 }
             }
             task.resume()
         }
-        
-        
     }
+
     
-    func parserJson (recipeData: Data) -> RecipeModel? {
+    func parserJson (recipeData: Data) -> RecipeModelDecoder? {
         let decoder = JSONDecoder()
         do {
             let decoderData = try decoder.decode(RecipeModelDecoder.self, from: recipeData)
-            var ingridientsName = [String]()
-            var ingridientsAmount = [String]()
-            for i in decoderData.ingredients {
-                ingridientsName.append(i.name)
-                ingridientsAmount.append("\(i.amount.metric.value) \(i.amount.metric.unit) ")
-            }
-            let recipe = RecipeModel(ingridientName: ingridientsName, ingridiendAmount: ingridientsAmount)
-            return recipe
+            return decoderData
         } catch {
           print("error1")
             return nil

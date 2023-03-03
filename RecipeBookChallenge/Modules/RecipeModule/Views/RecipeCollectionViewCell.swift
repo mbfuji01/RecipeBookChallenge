@@ -49,16 +49,7 @@ class RecipeCollectionViewCell: UICollectionViewCell {
 	}
 }
 
-extension RecipeCollectionViewCell: RecipeManagerDelegate {
-    func didRecipe(recipeManager: RecipeManager, recipe: RecipeModel) {
-        DispatchQueue.main.async {
-            let a1 = recipe.ingridientName
-            let a2 = recipe.ingridiendAmount
-          print(a1)
-          print(a2)
 
-        }
-    }
     
     
 }
