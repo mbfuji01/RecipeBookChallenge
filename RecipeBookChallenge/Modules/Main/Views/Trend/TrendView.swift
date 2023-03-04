@@ -26,9 +26,9 @@ final class TrendView: UIView {
         return collectionView
     }()
     
-    var viewModel: TrendResponseModel?
-    
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
+    
+    var viewModel: RecipesResponseModel?
     
     private var idArray: [Int] = []
     private var detailModels: [DetailResponseModel] = []
@@ -47,11 +47,11 @@ final class TrendView: UIView {
 //        collectionView.reloadData()
 //    }
     
-    func configureTrendView(with model: TrendResponseModel) {
+    func configureDetailView(with model: RecipesResponseModel) {
         model.results.forEach { element in
             Task(priority: .utility) {
                 do {
-                    let detail = try await apiService.fetchDetailForTrendsAsync(id: element.id)
+                    let detail = try await apiService.fetchDetailAsync(id: element.id)
                     detailModels.append(detail)
                     await MainActor.run(body: {
                         collectionView.reloadData()

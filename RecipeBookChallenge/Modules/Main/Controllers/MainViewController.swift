@@ -92,7 +92,7 @@ private extension MainViewController {
             do {
                 let trends = try await apiService.fetchTrendssAsync()
                 await MainActor.run(body: {
-                    trendView.configureTrendView(with: trends)
+                    trendView.configureDetailView(with: trends)
                 })
             } catch {
                 await MainActor.run(body: {
