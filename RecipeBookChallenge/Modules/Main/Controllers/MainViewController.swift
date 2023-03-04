@@ -63,23 +63,24 @@ final class MainViewController: UIViewController {
         $0.axis = .vertical
     }
     
-    private let trendView = TrendView()
+    private lazy var trendView: TrendView = {
+        let trendView = TrendView()
+        trendView.delegate = self
+        return trendView
+    }()
+    
     private let savedView = SavedView()
     private let mainBrain = MainBrain()
     
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
+    
+    private var intArray: [Int] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewController()
         fetchTrendsAsync()
     }
-	
-	func routeToRecipe(with indexPath: IndexPath) {
-//		let id = itemsId[indexPath]
-		let recipeVC = RecipeViewController()
-		present(recipeVC, animated: true)
-	}
     
     @objc
     private func didTapSeeAllTrendsButton() {
@@ -91,12 +92,27 @@ final class MainViewController: UIViewController {
         print(#function)
     }
 }
-var itemsId = [Int]()
+
+extension MainViewController: TrendViewDelegate {
+    func didTapCell(at index: Int) {
+        let recipeNumber = intArray[index]
+        routeToRecipeVC(with: recipeNumber)
+    }
+}
+
 private extension MainViewController {
+    func routeToRecipeVC(with id: Int) {
+        let viewController = RecipeViewController()
+        viewController.fetchRecipeId(index: id)
+        present(viewController, animated: true)
+    }
+    
     func fetchTrendsAsync() {
         Task(priority: .utility) {
             do {
                 let trends = try await apiService.fetchTrendssAsync()
+                intArray = trends.results.map({$0.id})
+                print(intArray)
                 await MainActor.run(body: {
                     trendView.configureDetailView(with: trends)
                 })
@@ -105,29 +121,29 @@ private extension MainViewController {
                     print(error, error.localizedDescription)
                 })
             }
-			
+            
         }
     }
     
-//    func fetchTrendsAsync() {
-//        Task(priority: .utility) {
-//            do {
-//                let trends = try await apiService.fetchTrendssAsync()
-//                await MainActor.run(body: {
-//                    trends.results.forEach({ element in
-//                        idArray.append(element.id)
-//                    })
-//                    print(idArray)
-//                    trendView.configureTrendView(with: trends)
-//                })
-//            } catch {
-//                await MainActor.run(body: {
-//                    print(error, error.localizedDescription)
-//                })
-//            }
-//        }
-//    }
- 
+    //    func fetchTrendsAsync() {
+    //        Task(priority: .utility) {
+    //            do {
+    //                let trends = try await apiService.fetchTrendssAsync()
+    //                await MainActor.run(body: {
+    //                    trends.results.forEach({ element in
+    //                        idArray.append(element.id)
+    //                    })
+    //                    print(idArray)
+    //                    trendView.configureTrendView(with: trends)
+    //                })
+    //            } catch {
+    //                await MainActor.run(body: {
+    //                    print(error, error.localizedDescription)
+    //                })
+    //            }
+    //        }
+    //    }
+    
     func setupViewController() {
         view.backgroundColor = .white
         addSubviews()
