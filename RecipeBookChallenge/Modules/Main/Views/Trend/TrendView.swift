@@ -6,7 +6,10 @@
 //
 
 import UIKit
-import Foundation
+
+protocol TrendViewDelegate: AnyObject {
+    func didTapCell(at index: Int)
+}
 
 final class TrendView: UIView {
     
@@ -26,6 +29,8 @@ final class TrendView: UIView {
         collectionView.register(TrendCollectionViewCell.self, forCellWithReuseIdentifier: "TrendCollectionViewCell")
         return collectionView
     }()
+    
+    weak var delegate: TrendViewDelegate?
     
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
     
@@ -69,7 +74,9 @@ final class TrendView: UIView {
 
 extension TrendView: UICollectionViewDelegate {
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		MainViewController().routeToRecipe(with: indexPath)
+//		MainViewController().routeToRecipe(with: indexPath)
+        print(indexPath.item)
+        delegate?.didTapCell(at: indexPath.item)
 	}
 }
 

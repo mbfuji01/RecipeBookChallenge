@@ -45,17 +45,17 @@ final class APIService {
 extension APIService: APIServiceProtocol {
 
     func fetchTrendssAsync() async throws -> RecipesResponseModel {
-        let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKey.keyCooking)\(adds.popularity)"
+        let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKey.keyCooking2)\(adds.popularity)"
         return try await networkManager.request(urlString: urlString)
     }
     
     func fetchDetailAsync(id: Int) async throws -> DetailResponseModel {
-        let urlString = "\(url.cookMainUrl)\(id)\(adds.information)?apiKey=\(apiKey.keyCooking)"
+        let urlString = "\(url.cookMainUrl)\(id)\(adds.information)?apiKey=\(apiKey.keyCooking2)"
         return try await networkManager.request(urlString: urlString)
     }
     
     func fetchByCategoriesAsync(with categoryName: String) async throws -> RecipesResponseModel {
-        let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKey.keyCooking)\(adds.mealTypes)=\(categoryName)"
+        let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKey.keyCooking2)\(adds.mealTypes)=\(categoryName)"
         return try await networkManager.request(urlString: urlString)
     }
 }

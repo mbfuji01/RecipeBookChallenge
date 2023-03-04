@@ -51,6 +51,8 @@ class RecipeViewController: UIViewController {
 	private lazy var recipeDescriptionStackView = UIStackView()
     let tableView = UITableView(frame: CGRect.zero, style: .plain)
 	
+    var recipeId: Int = 0
+    
 	//MARK: - Lifecycle
 	
 	override func viewDidLoad() {
@@ -63,6 +65,12 @@ class RecipeViewController: UIViewController {
 //        tableView.register(MyTableViewCell.self, forCellReuseIdentifier: "table")
         tableView.showsVerticalScrollIndicator = false
 	}
+    
+    func fetchRecipeId(index: Int) {
+        recipeId = index
+        print(index)
+        print(recipeId)
+    }
 	
 	private func setupViews() {
 		view.backgroundColor = .white
