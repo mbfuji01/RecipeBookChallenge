@@ -8,8 +8,9 @@
 //"https://api.spoonacular.com/recipes/complexSearch?apiKey=39e9591ac1334476a6663cf291b70458"
 
 protocol APIServiceProtocol {
-    func fetchTrendssAsync() async throws -> TrendResponseModel
-    func fetchDetailForTrendsAsync(id: Int) async throws -> DetailResponseModel
+    func fetchTrendssAsync() async throws -> RecipesResponseModel
+    func fetchDetailAsync(id: Int) async throws -> DetailResponseModel
+    func fetchByCategoriesAsync(with categoryName: String) async throws -> RecipesResponseModel
 }
 
 final class APIService {
@@ -22,12 +23,14 @@ final class APIService {
         static let keyCooking = "39e9591ac1334476a6663cf291b70458"
         static let keyCooking2 = "5645a96a39764c9991bbb903e6000858"
         static let keyCooking3 = "61e92e7bbdf0488bba7da727485eed79"
+        static let keyCooking4 = "145f438b739946ec96b50e01810525c8"
     }
     
     enum adds {
         static let complexSearch = "complexSearch"
         static let popularity = "&sort=popularity"
         static let information = "/information"
+        static let mealTypes = "&type"
     }
     
     private let networkManager: NetworkManagerProtocol
@@ -41,13 +44,20 @@ final class APIService {
 
 extension APIService: APIServiceProtocol {
 
-    func fetchTrendssAsync() async throws -> TrendResponseModel {
-        let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKey.keyCooking3)\(adds.popularity)"
+    func fetchTrendssAsync() async throws -> RecipesResponseModel {
+        let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKey.keyCooking4)\(adds.popularity)"
         return try await networkManager.request(urlString: urlString)
     }
     
-    func fetchDetailForTrendsAsync(id: Int) async throws -> DetailResponseModel {
-        let urlString = "\(url.cookMainUrl)\(id)\(adds.information)?apiKey=\(apiKey.keyCooking3)"
+    func fetchDetailAsync(id: Int) async throws -> DetailResponseModel {
+        let urlString = "\(url.cookMainUrl)\(id)\(adds.information)?apiKey=\(apiKey.keyCooking4)"
+        return try await networkManager.request(urlString: urlString)
+    }
+    
+    func fetchByCategoriesAsync(with categoryName: String) async throws -> RecipesResponseModel {
+        let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKey.keyCooking4)\(adds.mealTypes)=\(categoryName)"
         return try await networkManager.request(urlString: urlString)
     }
 }
+
+//https://api.spoonacular.com/recipes/complexSearch?apiKey=5645a96a39764c9991bbb903e6000858&type=salad

@@ -1,13 +1,13 @@
 //
-//  TrendCollectionViewCell.swift
-//  CookBook
+//  GenlCollectionViewCell.swift
+//  RecipeBookChallenge
 //
-//  Created by Сергей Золотухин on 27.02.2023.
+//  Created by Сергей Золотухин on 03.03.2023.
 //
 
 import UIKit
 
-final class TrendCollectionViewCell: UICollectionViewCell {
+final class GenlCollectionViewCell: UICollectionViewCell {
     
     private let mainImageView = make(UIImageView()) {
         $0.layer.cornerRadius = 16
@@ -72,15 +72,8 @@ final class TrendCollectionViewCell: UICollectionViewCell {
         $0.axis = .horizontal
     }
     
-    private let subDescriptionLabel = make(UILabel()) {
-        $0.text = "dinner, main dish"
-        $0.numberOfLines = 0
-        $0.textColor = .lightGray
-        $0.font = UIFont.systemFont(ofSize: 12)
-    }
-    
     private let mainStackView = make(UIStackView()) {
-        $0.spacing = 5
+        $0.spacing = 1
         $0.distribution = .fill
         $0.axis = .vertical
     }
@@ -93,15 +86,12 @@ final class TrendCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     func configureCell(with model: DetailResponseModel) {
         descriptionLabel.text = model.title
         durationLabel.text = " \(Int(model.readyInMinutes)) mins "
         rateLabel.text = "\(model.aggregateLikes) "
         mainImageView.downloaded(from: model.image)
-        
-        let dishString = model.dishTypes.joined(separator: ", ")
-        subDescriptionLabel.text = "\(dishString)"
     }
     
     @objc
@@ -115,7 +105,7 @@ final class TrendCollectionViewCell: UICollectionViewCell {
     }
 }
 
-private extension TrendCollectionViewCell {
+private extension GenlCollectionViewCell {
     func setupCell() {
         
         rateStackView.addArrangedSubview(rateImageView)
@@ -126,7 +116,6 @@ private extension TrendCollectionViewCell {
         
         mainStackView.addArrangedSubview(mainImageView)
         mainStackView.addArrangedSubview(descriptionStackView)
-        mainStackView.addArrangedSubview(subDescriptionLabel)
         
         contentView.myAddSubView(mainStackView)
         contentView.myAddSubView(rateStackView)
@@ -147,10 +136,7 @@ private extension TrendCollectionViewCell {
             
             durationLabel.bottomAnchor.constraint(equalTo: mainImageView.bottomAnchor, constant: -10),
             durationLabel.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: -10),
-            
-            mainImageView.heightAnchor.constraint(equalToConstant: 180),
-            mainImageView.widthAnchor.constraint(equalToConstant: 280),
-            
+            mainImageView.heightAnchor.constraint(equalToConstant: 160),
             moreButton.widthAnchor.constraint(equalToConstant: 40)
         ])
     }
