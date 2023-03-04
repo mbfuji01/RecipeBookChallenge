@@ -74,6 +74,12 @@ final class MainViewController: UIViewController {
         setupViewController()
         fetchTrendsAsync()
     }
+	
+	func routeToRecipe(with indexPath: IndexPath) {
+//		let id = itemsId[indexPath]
+		let recipeVC = RecipeViewController()
+		present(recipeVC, animated: true)
+	}
     
     @objc
     private func didTapSeeAllTrendsButton() {
@@ -85,7 +91,7 @@ final class MainViewController: UIViewController {
         print(#function)
     }
 }
-
+var itemsId = [Int]()
 private extension MainViewController {
     func fetchTrendsAsync() {
         Task(priority: .utility) {
@@ -99,6 +105,7 @@ private extension MainViewController {
                     print(error, error.localizedDescription)
                 })
             }
+			
         }
     }
     

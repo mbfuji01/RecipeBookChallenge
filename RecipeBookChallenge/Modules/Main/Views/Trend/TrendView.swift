@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Foundation
 
 final class TrendView: UIView {
     
@@ -67,7 +68,9 @@ final class TrendView: UIView {
 }
 
 extension TrendView: UICollectionViewDelegate {
-    
+	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+		MainViewController().routeToRecipe(with: indexPath)
+	}
 }
 
 extension TrendView: UICollectionViewDataSource {

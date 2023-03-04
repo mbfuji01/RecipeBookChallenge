@@ -41,8 +41,8 @@ class RecipeViewController: UIViewController {
     
 
    
-    let list = TableModel.getRecept()
-    var tableVC = MyTableViewCell()
+//    let list = TableModel.getRecept()
+//    var tableVC = MyTableViewCell()
 	private lazy var caloriesLabel = UILabel.recipeTopItemLabel
 	private lazy var timeLabel = UILabel.recipeTopItemLabel
 	private lazy var difficultLabel = UILabel.recipeTopItemLabel
@@ -60,7 +60,7 @@ class RecipeViewController: UIViewController {
         tableView.rowHeight = 65
 		setupViews()
 		setConstraints()
-        tableView.register(MyTableViewCell.self, forCellReuseIdentifier: "table")
+//        tableView.register(MyTableViewCell.self, forCellReuseIdentifier: "table")
         tableView.showsVerticalScrollIndicator = false
 	}
 	
@@ -136,14 +136,12 @@ extension RecipeViewController: UITableViewDelegate, UITableViewDataSource {
     
     
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        list.count
+        1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "table", for: indexPath) as!
-        MyTableViewCell
-        cell.configurateCell(model: list[indexPath.row])
-        return cell
+        let cell = UITableViewCell()
+		return cell
     }
 
 }
