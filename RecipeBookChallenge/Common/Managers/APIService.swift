@@ -11,6 +11,7 @@ protocol APIServiceProtocol {
     func fetchTrendssAsync() async throws -> RecipesResponseModel
     func fetchDetailAsync(id: Int) async throws -> DetailResponseModel
     func fetchByCategoriesAsync(with categoryName: String) async throws -> RecipesResponseModel
+    func fetchIngridientsAsync(id:Int) async throws -> RecipeModel
 }
 
 final class APIService {
@@ -20,10 +21,10 @@ final class APIService {
     }
     
     enum apiKey {
-        static let keyCooking = "39e9591ac1334476a6663cf291b70458"
-        static let keyCooking2 = "5645a96a39764c9991bbb903e6000858"
-        static let keyCooking3 = "61e92e7bbdf0488bba7da727485eed79"
-        static let keyCooking4 = "145f438b739946ec96b50e01810525c8"
+        static let keyCooking = "ecc4c1f4535c4797b5a50185f5802748"
+        static let keyCooking2 = "62d923412e0a409cab1961242371c4d1"
+        static let keyCooking3 = "ecc4c1f4535c4797b5a50185f5802748"
+        static let keyCooking4 = "ecc4c1f4535c4797b5a50185f5802748"
     }
     
     enum adds {
@@ -31,6 +32,7 @@ final class APIService {
         static let popularity = "&sort=popularity"
         static let information = "/information"
         static let mealTypes = "&type"
+        static let ingridientWidget = "/ingredientWidget.json"
     }
     
     private let networkManager: NetworkManagerProtocol
@@ -43,6 +45,7 @@ final class APIService {
 }
 
 extension APIService: APIServiceProtocol {
+    
 
     func fetchTrendssAsync() async throws -> RecipesResponseModel {
         let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKey.keyCooking2)\(adds.popularity)"
@@ -58,6 +61,13 @@ extension APIService: APIServiceProtocol {
         let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKey.keyCooking2)\(adds.mealTypes)=\(categoryName)"
         return try await networkManager.request(urlString: urlString)
     }
+    
+    func fetchIngridientsAsync(id:Int) async throws -> RecipeModel {
+        let urlString = "\(url.cookMainUrl)\(id)\(adds.ingridientWidget)?apiKey=\(apiKey.keyCooking2)"
+        return try await networkManager.request(urlString: urlString)
+    }
 }
 
+
 //https://api.spoonacular.com/recipes/complexSearch?apiKey=5645a96a39764c9991bbb903e6000858&type=salad
+

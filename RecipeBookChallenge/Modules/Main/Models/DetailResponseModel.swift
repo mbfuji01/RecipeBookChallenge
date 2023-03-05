@@ -12,6 +12,8 @@ struct DetailResponseModel: Decodable {
     let readyInMinutes: Double
     let image: String
     let dishTypes: [String]
+    let cookingMinutes: Int
+    let servings: Int
 }
 
 struct DetailModel {
