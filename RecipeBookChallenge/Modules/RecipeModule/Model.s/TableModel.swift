@@ -12,6 +12,11 @@ struct RecipeModel: Decodable {
 struct Ingredient: Decodable {
     let name, image: String
     let amount: Amount
+    
+    var amountString: String {
+        var amountMetric = String(format: "%.0f", amount.metric.value) + " \(amount.metric.unit)"
+        return amountMetric
+    }
 }
 
 // MARK: - Amount

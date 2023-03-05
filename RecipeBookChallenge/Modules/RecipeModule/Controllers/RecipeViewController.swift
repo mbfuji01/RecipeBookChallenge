@@ -151,13 +151,28 @@ extension RecipeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "table", for: indexPath) as!
         MyTableViewCell
-        guard let model = self.viewModel?.ingredients[indexPath.row] else {
+        let reversedIndex = (self.viewModel?.ingredients.count ?? 0) - 1 - indexPath.row
+        guard let model = self.viewModel?.ingredients[reversedIndex] else {
             return UITableViewCell()
         }
         cell.configurateCell(model: model)
         return cell
     }
 
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let cell = tableView.cellForRow(at: indexPath) as? MyTableViewCell {
+            cell.favoriteButtonTapped()
+            
+        }
+    }
+
+//    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+//        if let cell = tableView.cellForRow(at: indexPath) as? MyTableViewCell {
+//            cell.imageView?.image = UIImage(named: "circle")
+//        }
+//    }
+
+    
 }
 
 extension RecipeViewController {

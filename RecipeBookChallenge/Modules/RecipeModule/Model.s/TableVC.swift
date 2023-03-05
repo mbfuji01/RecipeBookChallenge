@@ -11,13 +11,13 @@ import UIKit
 class MyTableViewCell: UITableViewCell {
     private lazy var ingridient = UILabel.recipeItemLabel
     private lazy var amountIngridient = UILabel.recipeItemLabel
-    private lazy var favoriteButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setBackgroundImage(UIImage(named: "circle"), for: .normal)
-        button.setBackgroundImage(UIImage(named: "checkmark.circle"), for: .selected)
-        button.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
-        return button
+    private lazy var toDoImage: UIImageView =  {
+        let image = UIImageView()
+        image.image = UIImage(named: "circle")
+        return image
     }()
+    
+    var toDoBool = false
     
     func configurateCell(model:Ingredient) {
 
@@ -25,20 +25,19 @@ class MyTableViewCell: UITableViewCell {
         ingridient.text = model.name.capitalized
         ingridient.numberOfLines = 0
         amountIngridient.numberOfLines = 0
-        amountIngridient.text = "\(String(format: "%.0f", model.amount.metric.value)) \(model.amount.metric.unit)"
-        updateFavoriteButtonImage()
+        amountIngridient.text = model.amountString
         
     }
   
     func setupCell() {
-        addSubview(favoriteButton)
+        addSubview(toDoImage)
         addSubview(ingridient)
         addSubview(amountIngridient)
   
 
         ingridient.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            ingridient.leadingAnchor.constraint(equalTo: favoriteButton.trailingAnchor, constant: 15),
+            ingridient.leadingAnchor.constraint(equalTo: toDoImage.trailingAnchor, constant: 15),
             ingridient.trailingAnchor.constraint(equalTo: amountIngridient.leadingAnchor, constant: -5),
             ingridient.topAnchor.constraint(equalTo: topAnchor, constant: 5),
             ingridient.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
@@ -54,27 +53,27 @@ class MyTableViewCell: UITableViewCell {
             amountIngridient.heightAnchor.constraint(greaterThanOrEqualToConstant: 0)
         ])
 
-        favoriteButton.translatesAutoresizingMaskIntoConstraints = false
+        toDoImage.translatesAutoresizingMaskIntoConstraints = false
               NSLayoutConstraint.activate([
-                favoriteButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-                favoriteButton.centerYAnchor.constraint(equalTo: centerYAnchor),
-                favoriteButton.widthAnchor.constraint(equalToConstant: 24),
-                favoriteButton.heightAnchor.constraint(equalToConstant: 24)
+                toDoImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+                toDoImage.centerYAnchor.constraint(equalTo: centerYAnchor),
+                toDoImage.widthAnchor.constraint(equalToConstant: 24),
+                toDoImage.heightAnchor.constraint(equalToConstant: 24)
               ])
       
     }
 
-    @objc private func favoriteButtonTapped() {
-        favoriteButton.isSelected.toggle()
-        updateFavoriteButtonImage()
+    func favoriteButtonTapped() {
+        toDoBool.toggle()
+        toDoTapped()
+
     }
-    private func updateFavoriteButtonImage() {
-        if favoriteButton.isSelected {
-            favoriteButton.setBackgroundImage(UIImage(named: "checkmark.circle"), for: .selected)
-        }else{
-            favoriteButton.setBackgroundImage(UIImage(named: "circle"), for: .normal)
+    func toDoTapped() {
+        if toDoBool {
+            toDoImage.image = UIImage(named: "checkmark.circle")
+        }else {
+            toDoImage.image = UIImage(named: "circle")
         }
-        
-//        favoriteButton.setBackgroundImage(favoriteButton.isSelected ? UIImage(named: "checkmark.circle") : UIImage(named: "circle"), for: .normal)
     }
+    
 }

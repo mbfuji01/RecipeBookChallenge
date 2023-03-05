@@ -22,7 +22,7 @@ final class APIService {
     
     enum apiKey {
         static let keyCooking = "39e9591ac1334476a6663cf291b70458"
-        static let keyCooking2 = "145f438b739946ec96b50e01810525c8"
+        static let keyCooking2 = "39e9591ac1334476a6663cf291b70458"
         static let keyCooking3 = "61e92e7bbdf0488bba7da727485eed79"
         static let keyCooking4 = "145f438b739946ec96b50e01810525c8"
     }
