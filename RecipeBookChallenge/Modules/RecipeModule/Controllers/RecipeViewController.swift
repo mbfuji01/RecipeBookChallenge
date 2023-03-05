@@ -5,66 +5,71 @@
 //  Created by demasek on 01.03.2023.
 //
 
-import Foundation
 import UIKit
 
 class RecipeViewController: UIViewController {
-	enum Constants {
-		static let welcomeToChallenge: String = "welcome to challenge" // Пример заполнения данных в константы, удалить строку при начале работы с контроллером
-		static let recipeCell: String = "cell"
-	}
-	
-	//MARK: - Create UI
-	
-	private lazy var recipeTitleLabel: UILabel = {
-		let label = UILabel()
-		label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
-		label.textColor = .black
-		label.numberOfLines = 0
-//		label.textAlignment = .center
-		return label
-	}()
-	
-	private lazy var recipeImageView: UIImageView = {
-		let imageView = UIImageView()
-		imageView.layer.cornerRadius = 12
-		imageView.clipsToBounds = true
-		return imageView
-	}()
-	
-	private lazy var favoriteButton: UIButton = {
-		let button = UIButton(type: .system)
-		button.setBackgroundImage(UIImage(named: "bookmark"), for: .normal)
-		button.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
-		return button
-	}()
+    enum Constants {
+        static let welcomeToChallenge: String = "welcome to challenge" // Пример заполнения данных в константы, удалить строку при начале работы с контроллером
+        static let recipeCell: String = "cell"
+    }
     
-
-   
-//    let list = TableModel.getRecept()
-//    var tableVC = MyTableViewCell()
+    //MARK: - Create UI
+    
+    private lazy var recipeTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        label.textColor = .black
+        label.numberOfLines = 0
+        //		label.textAlignment = .center
+        return label
+    }()
+    
+    private lazy var recipeImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 12
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
+    private lazy var favoriteButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setBackgroundImage(UIImage(named: "bookmark"), for: .normal)
+        button.addTarget(self, action: #selector(favoriteButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    
+    let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
+    var tableVC = MyTableViewCell()
+    
 	private lazy var caloriesLabel = UILabel.recipeTopItemLabel
 	private lazy var timeLabel = UILabel.recipeTopItemLabel
-	private lazy var difficultLabel = UILabel.recipeTopItemLabel
+	//private lazy var difficultLabel = UILabel.recipeTopItemLabel
 	private lazy var servesLabel = UILabel.recipeTopItemLabel
-	
 	private lazy var recipeDescriptionStackView = UIStackView()
-    let tableView = UITableView(frame: CGRect.zero, style: .plain)
-	
+    private lazy var tableView = UITableView(frame: CGRect.zero, style: .plain)
+    
+    var viewModel: RecipeModel?
     var recipeId: Int = 0
     
 	//MARK: - Lifecycle
-	
+    
 	override func viewDidLoad() {
-		super.viewDidLoad()
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.rowHeight = 65
-		setupViews()
-		setConstraints()
-//        tableView.register(MyTableViewCell.self, forCellReuseIdentifier: "table")
-        tableView.showsVerticalScrollIndicator = false
+        super.viewDidLoad()
+              
+              tableView.delegate = self
+              tableView.dataSource = self
+              tableView.rowHeight = 65
+              tableView.register(MyTableViewCell.self, forCellReuseIdentifier: "table")
+              tableView.showsVerticalScrollIndicator = false
+              
+              fetchIngridient()
+              setupViews()
+              setConstraints()
 	}
+    
+  
     
     func fetchRecipeId(index: Int) {
         recipeId = index
@@ -78,9 +83,9 @@ class RecipeViewController: UIViewController {
 		recipeImageView.image = UIImage(named: "trendImage")
 		caloriesLabel.text = "240 Calories"
 		timeLabel.text = "40 Min"
-		difficultLabel.text = "Easy"
+		//difficultLabel.text = "Easy"
 		servesLabel.text = "Serves 2"
-		recipeDescriptionStackView = UIStackView(arrangedSubviews:[caloriesLabel, timeLabel, difficultLabel, servesLabel], axis: .horizontal, spacing: 10)
+		recipeDescriptionStackView = UIStackView(arrangedSubviews:[caloriesLabel, timeLabel, servesLabel], axis: .horizontal, spacing: 10)
 		recipeDescriptionStackView.distribution = .equalSpacing
 		view.addSubview(recipeTitleLabel)
 		view.addSubview(recipeImageView)
@@ -90,10 +95,7 @@ class RecipeViewController: UIViewController {
         tableView.backgroundColor = .clear
 	}
 	
-//	private func setDelegates() {
-//		recipeCollectionView.dataSource = self
-//		recipeCollectionView.delegate = self
-//	}
+
 	
 	@objc
 	private func favoriteButtonTapped() {
@@ -138,20 +140,48 @@ class RecipeViewController: UIViewController {
 	}
 }
 
-
+//MARK: - Create TableView Cell
 
 extension RecipeViewController: UITableViewDelegate, UITableViewDataSource {
     
-    
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1
-    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        viewModel?.ingredients.count ?? 0
+      }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
-		return cell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "table", for: indexPath) as!
+        MyTableViewCell
+        guard let model = self.viewModel?.ingredients[indexPath.row] else {
+            return UITableViewCell()
+        }
+        cell.configurateCell(model: model)
+        return cell
     }
 
+}
+
+extension RecipeViewController {
+    
+  
+    
+    func fetchIngridient() {
+        Task(priority: .utility) {
+            do {
+                let ingridient = try await apiService.fetchIngridientsAsync(id: 7654)
+                viewModel = ingridient
+                print(ingridient)
+                await MainActor.run(body: {
+                    tableView.reloadData()
+                })
+            } catch {
+                await MainActor.run(body: {
+                    print("dddd")
+                    print(error, error.localizedDescription)
+                })
+            }
+            
+        }
+    }
 }
 
 
