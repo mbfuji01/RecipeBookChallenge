@@ -112,7 +112,6 @@ private extension MainViewController {
             do {
                 let trends = try await apiService.fetchTrendssAsync()
                 intArray = trends.results.map({$0.id})
-                print(intArray)
                 await MainActor.run(body: {
                     trendView.configureDetailView(with: trends)
                 })
@@ -124,26 +123,7 @@ private extension MainViewController {
             
         }
     }
-    
-    //    func fetchTrendsAsync() {
-    //        Task(priority: .utility) {
-    //            do {
-    //                let trends = try await apiService.fetchTrendssAsync()
-    //                await MainActor.run(body: {
-    //                    trends.results.forEach({ element in
-    //                        idArray.append(element.id)
-    //                    })
-    //                    print(idArray)
-    //                    trendView.configureTrendView(with: trends)
-    //                })
-    //            } catch {
-    //                await MainActor.run(body: {
-    //                    print(error, error.localizedDescription)
-    //                })
-    //            }
-    //        }
-    //    }
-    
+   
     func setupViewController() {
         view.backgroundColor = .white
         addSubviews()
