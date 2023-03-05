@@ -33,10 +33,10 @@ class RecipeViewController: UIViewController {
         return button
     }()
     
-    
     let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
     var tableVC = TableViewCell()
     var viewModel: RecipeModel?
+    var receptModel: DetailResponseModel?
     var recipeId: Int = 0
     
     private lazy var caloriesLabel = UILabel.recipeTopItemLabel
@@ -56,6 +56,7 @@ class RecipeViewController: UIViewController {
         tableView.register(TableViewCell.self, forCellReuseIdentifier: "table")
         tableView.showsVerticalScrollIndicator = false
         
+        fetchRecept()
         fetchIngridient()
         setupViews()
         setConstraints()
@@ -63,17 +64,11 @@ class RecipeViewController: UIViewController {
     
     func fetchRecipeId(index: Int) {
         recipeId = index
-        print(index)
-        print(recipeId)
     }
     
     private func setupViews() {
         view.backgroundColor = .white
-        recipeTitleLabel.text = "How to make Tasty Fish (point & Kill)"
-        recipeImageView.image = UIImage(named: "trendImage")
-        caloriesLabel.text = "240 Calories"
-        timeLabel.text = "40 Min"
-        servesLabel.text = "Serves 2"
+        recipeTitleLabel.text = " "
         recipeDescriptionStackView = UIStackView(arrangedSubviews:[caloriesLabel, timeLabel, servesLabel], axis: .horizontal, spacing: 10)
         recipeDescriptionStackView.distribution = .equalSpacing
         view.addSubview(recipeTitleLabel)
@@ -82,6 +77,15 @@ class RecipeViewController: UIViewController {
         view.addSubview(recipeDescriptionStackView)
         view.addSubview(tableView)
         tableView.backgroundColor = .clear
+        
+    }
+    //MARK:  Обновляем экран согласно рецепта
+    private func fetchTopViewLabel (model: DetailResponseModel) {
+        recipeTitleLabel.text = model.title
+        caloriesLabel.text = "\(model.readyInMinutes) calories"  //пока берутся минуты на подготовку, нужно исправить
+        timeLabel.text = "\(model.readyInMinutes) min"
+        servesLabel.text = "\(model.servings) servings"
+        recipeImageView.downloaded(from: model.image)
     }
     
     
@@ -152,21 +156,35 @@ extension RecipeViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
 }
-
+//MARK: Получаем модель на рецепт и ингридиенты.
 extension RecipeViewController {
+    
+    func fetchRecept() {
+        Task(priority: .utility) {
+            do {
+                let recept = try await apiService.fetchDetailAsync(id: recipeId)
+                receptModel = recept
+                await MainActor.run(body: {
+                    fetchTopViewLabel(model: recept)
+                })
+            } catch {
+                await MainActor.run(body: {
+                    print(error, error.localizedDescription)
+                })
+            }
+        }
+    }
     
     func fetchIngridient() {
         Task(priority: .utility) {
             do {
-                let ingridient = try await apiService.fetchIngridientsAsync(id: 7654)
+                let ingridient = try await apiService.fetchIngridientsAsync(id: recipeId)
                 viewModel = ingridient
-                print(ingridient)
                 await MainActor.run(body: {
                     tableView.reloadData()
                 })
             } catch {
                 await MainActor.run(body: {
-                    print("dddd")
                     print(error, error.localizedDescription)
                 })
             }

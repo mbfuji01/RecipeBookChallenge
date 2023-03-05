@@ -14,7 +14,7 @@ struct Ingredient: Decodable {
     let amount: Amount
     
     var amountString: String {
-        var amountMetric = String(format: "%.0f", amount.metric.value) + " \(amount.metric.unit)"
+        var amountMetric = String(format: "%.1f", amount.metric.value) + " \(amount.metric.unit)"
         return amountMetric
     }
 }

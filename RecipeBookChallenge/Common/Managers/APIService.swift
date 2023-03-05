@@ -21,10 +21,10 @@ final class APIService {
     }
     
     enum apiKey {
-        static let keyCooking = "39e9591ac1334476a6663cf291b70458"
-        static let keyCooking2 = "39e9591ac1334476a6663cf291b70458"
-        static let keyCooking3 = "61e92e7bbdf0488bba7da727485eed79"
-        static let keyCooking4 = "145f438b739946ec96b50e01810525c8"
+        static let keyCooking = "ecc4c1f4535c4797b5a50185f5802748"
+        static let keyCooking2 = "62d923412e0a409cab1961242371c4d1"
+        static let keyCooking3 = "ecc4c1f4535c4797b5a50185f5802748"
+        static let keyCooking4 = "ecc4c1f4535c4797b5a50185f5802748"
     }
     
     enum adds {
@@ -64,7 +64,6 @@ extension APIService: APIServiceProtocol {
     
     func fetchIngridientsAsync(id:Int) async throws -> RecipeModel {
         let urlString = "\(url.cookMainUrl)\(id)\(adds.ingridientWidget)?apiKey=\(apiKey.keyCooking2)"
-        print(urlString)
         return try await networkManager.request(urlString: urlString)
     }
 }

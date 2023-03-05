@@ -13,7 +13,6 @@ struct DetailResponseModel: Decodable {
     let image: String
     let dishTypes: [String]
     let cookingMinutes: Int
-    let pricePerServing: Double
     let servings: Int
 }
 
