@@ -80,7 +80,6 @@ private extension CategoriesViewController {
             do {
                 let categoryRecipes = try await apiService.fetchByCategoriesAsync(with: categoryName)
                 await MainActor.run(body: {
-                    print(categoryRecipes)
                     routeToGenlViewController(with: categoryRecipes, with: index)
                 })
             } catch {

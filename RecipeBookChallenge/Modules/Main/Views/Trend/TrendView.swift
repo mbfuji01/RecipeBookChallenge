@@ -38,7 +38,7 @@ final class TrendView: UIView {
     
     private var idArray: [Int] = []
     private var detailModels: [DetailResponseModel] = []
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -48,50 +48,45 @@ final class TrendView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    func configureTrendView(with model: TrendResponseModel) {
-//        viewModel = model
-//        collectionView.reloadData()
-//    }
-    
     func configureDetailView(with model: RecipesResponseModel) {
         model.results.forEach { element in
-            Task(priority: .utility) {
-                do {
-                    let detail = try await apiService.fetchDetailAsync(id: element.id)
-                    detailModels.append(detail)
-                    await MainActor.run(body: {
-                        collectionView.reloadData()
-                    })
-                } catch {
-                    await MainActor.run(body: {
-                        print(error, error.localizedDescription)
-                    })
-                }
+            idArray.append(element.id)
+        }
+        
+        let stringArray = idArray.map { String($0) }
+        let singleString = stringArray.joined(separator: ",")
+        
+        Task(priority: .utility) {
+            do {
+                let recipesDetail = try await apiService.fetcManyIdsAsync(with: singleString)
+                detailModels = recipesDetail
+                await MainActor.run(body: {
+                    collectionView.reloadData()
+                })
+            } catch {
+                await MainActor.run(body: {
+                    print(error, error.localizedDescription)
+                })
             }
         }
     }
 }
 
 extension TrendView: UICollectionViewDelegate {
-	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//		MainViewController().routeToRecipe(with: indexPath)
-        print(indexPath.item)
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         delegate?.didTapCell(at: indexPath.item)
-	}
+    }
 }
 
 extension TrendView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        viewModel?.results.count ?? 0
         detailModels.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TrendCollectionViewCell", for: indexPath) as? TrendCollectionViewCell else { fatalError("") }
-        
-//        guard let model: TrendModel = self.viewModel?.results[indexPath.item] else { return UICollectionViewCell()
-//        }
+
         let model: DetailResponseModel = self.detailModels[indexPath.item]
         
         cell.configureCell(with: model)

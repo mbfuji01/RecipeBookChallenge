@@ -76,7 +76,6 @@ final class GenlViewController: UIViewController {
 
 extension GenlViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath.item)
         didTapCell(at: indexPath.item)
     }
 }
