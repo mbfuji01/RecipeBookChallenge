@@ -6,12 +6,8 @@
 //
 
 struct CategoryArray {
-    let categories = ["main course", "side dish", "dessert", "appetizer", "salad", "bread", "breakfast", "soup", "beverage", "sauce","marinade", "fingerfood", "snack", "drink"]
+    let categories = ["main course", "side dish", "dessert", "appetizer", "salad", "bread", "breakfast", "soup", "beverage", "sauce", "marinade", "fingerfood", "snack", "drink"]
 }
-
-//struct CategoryArray {
-//    let categories = ["dessert", "appetizer", "salad", "bread", "breakfast", "soup", "beverage", "sauce","marinade", "fingerfood", "snack", "drink"]
-//}
 
 
 

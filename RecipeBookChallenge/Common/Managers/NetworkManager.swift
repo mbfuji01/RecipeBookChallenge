@@ -1,6 +1,6 @@
 //
 //  NetworkManager.swift
-//  ByteCoin
+//  RecipeBookChallenge
 //
 //  Created by Сергей Золотухин on 21.02.2023.
 //

@@ -12,7 +12,7 @@ final class TrendCollectionViewCell: UICollectionViewCell {
     private let mainImageView = make(UIImageView()) {
         $0.layer.cornerRadius = 16
         $0.clipsToBounds = true
-        $0.image = UIImage(named: "trendImage")
+        $0.image = UIImage(named: "placeholderImage")
     }
     
     private let rateImageView = make(UIImageView()) {

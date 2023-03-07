@@ -10,7 +10,8 @@ import UIKit
 final class CategoriesCollectionViewCell: UICollectionViewCell {
     
     private let mainImageView = make(UIImageView()) {
-        $0.image = UIImage(named: "recentImage")
+        $0.image = UIImage(named: "placeholderImage")
+        $0.contentMode = .scaleToFill
     }
     
     private let descriptionLabel = make(UILabel()) {
@@ -29,10 +30,9 @@ final class CategoriesCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    func configureCell(with categoryTitle: String, with image: String) {
-    func configureCell(with image: String) {
-//        descriptionLabel.text = categoryTitle
-        mainImageView.downloaded(from: image)
+    func configureCell(with categoryTitle: String) {
+        descriptionLabel.text = categoryTitle
+        mainImageView.image = UIImage(named: "\(categoryTitle)")
     }
 }
 

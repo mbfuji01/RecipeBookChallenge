@@ -35,13 +35,10 @@ final class CategoriesViewController: UIViewController {
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
     
     private let categoryArray = CategoryArray()
-    
-    private var imageArray: [CategoryImageModel] = []
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewController()
-        fetchCategoriesImages()
     }
 }
 
@@ -53,19 +50,16 @@ extension CategoriesViewController: UICollectionViewDelegate {
 
 extension CategoriesViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        categoryArray.categories.count
-        imageArray.count
+        categoryArray.categories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CategoriesCollectionViewCell", for: indexPath) as? CategoriesCollectionViewCell else { fatalError("") }
         
-//        let stringValue = categoryArray.categories[indexPath.item]
-        let imageValue = imageArray[indexPath.item].image
-        cell.configureCell(with: imageValue)
+        let stringValue = categoryArray.categories[indexPath.item]
+        cell.configureCell(with: stringValue)
 
-//        cell.configureCell(with: stringValue, with: imageValue)
         return cell
     }
 }
@@ -73,15 +67,14 @@ extension CategoriesViewController: UICollectionViewDataSource {
 private extension CategoriesViewController {
     
     func didTapCell(at index: Int) {
-        
+        //получаем название категории из массива названий по indexPath.item нажатой ячейки
         let categoryName = categoryArray.categories[index]
         
-        Task(priority: .utility) {
+        Task(priority: .userInitiated) {
             do {
+                //получаем модель по названию категории, содержащую 10 рецептов из выбранной категории
                 let categoryRecipes = try await apiService.fetchByCategoriesAsync(with: categoryName)
-                await MainActor.run(body: {
                     routeToGenlViewController(with: categoryRecipes, with: index)
-                })
             } catch {
                 await MainActor.run(body: {
                     print(error, error.localizedDescription)
@@ -89,31 +82,12 @@ private extension CategoriesViewController {
             }
         }
     }
-    
-    func fetchCategoriesImages() {
-        categoryArray.categories.enumerated().forEach { index, value in
-            Task(priority: .utility) {
-                do {
-                    let categoryRecipes = try await apiService.fetchByCategoriesAsync(with: value)
-                    await MainActor.run(body: {
-                        imageArray = categoryRecipes.results.map { CategoryImageModel.init(image: $0.image)
-                        }
-                        collectionView.reloadData()
-                    })
-                } catch {
-                    await MainActor.run(body: {
-                        print(error, error.localizedDescription)
-                    })
-                }
-            }
-        }
-    }
-    
+   
     func routeToGenlViewController(with model: RecipesResponseModel, with index: Int) {
         let viewController = GenlViewController()
-//        viewController.modalPresentationStyle = .fullScreen
-        viewController.setupModel(with: model)
-        viewController.setupTitle(with: categoryArray.categories[index])
+        let titleString = categoryArray.categories[index]
+        //передаем во вью контроллер модель, полученную по названию категории, содержащую 10 рецептов из выбранной категории, и название тайтла
+        viewController.setupGenlViewController(with: model, with: titleString)
         present(viewController, animated: true)
     }
     
