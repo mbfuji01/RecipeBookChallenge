@@ -96,31 +96,28 @@ final class MainViewController: UIViewController {
 extension MainViewController: TrendViewDelegate {
     func didTapCell(at index: Int) {
         let recipeNumber = intArray[index]
-        routeToRecipeVC(with: recipeNumber)
+        routeToDetailVC(with: recipeNumber)
     }
 }
 
 private extension MainViewController {
-    func routeToRecipeVC(with id: Int) {
-        let viewController = RecipeViewController()
-        viewController.fetchRecipeId(index: id)
+    func routeToDetailVC(with id: Int) {
+        let viewController = DetailViewController()
+        viewController.configureDetailViewController(with: id)
         present(viewController, animated: true)
     }
     
     func fetchTrendsAsync() {
-        Task(priority: .utility) {
+        Task(priority: .userInitiated) {
             do {
                 let trends = try await apiService.fetchTrendssAsync()
                 intArray = trends.results.map({$0.id})
-                await MainActor.run(body: {
                     trendView.configureDetailView(with: trends)
-                })
             } catch {
                 await MainActor.run(body: {
                     print(error, error.localizedDescription)
                 })
             }
-            
         }
     }
    

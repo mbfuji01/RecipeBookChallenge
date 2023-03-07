@@ -34,41 +34,34 @@ final class GenlViewController: UIViewController {
     
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
     
-    private var genlModel: RecipesResponseModel?
-    
     private var idArray: [Int] = []
     private var detailModels: [DetailResponseModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewController()
-        
-        guard let model = genlModel else { fatalError() }
-        configureDetailView(with: model)
     }
     
-    func setupModel(with model: RecipesResponseModel) {
-        genlModel = model
+    func setupGenlViewController(with model: RecipesResponseModel, with title: String) {
+        titleLabel.text = title
+        idArray = model.results.map { $0.id }
+        configureGenlView(with: model, with: idArray)
     }
     
-    func setupTitle(with textValue: String) {
-        titleLabel.text = textValue
-    }
-    
-    func configureDetailView(with model: RecipesResponseModel) {
-        model.results.forEach { element in
-            Task(priority: .utility) {
-                do {
-                    let detail = try await apiService.fetchDetailAsync(id: element.id)
-                    detailModels.append(detail)
-                    await MainActor.run(body: {
-                        collectionView.reloadData()
-                    })
-                } catch {
-                    await MainActor.run(body: {
-                        print(error, error.localizedDescription)
-                    })
-                }
+    func configureGenlView(with model: RecipesResponseModel, with array: [Int]) {
+        Task(priority: .userInitiated) {
+            let stringArray = array.map { String($0) }
+            let singleString = stringArray.joined(separator: ",")
+            do {
+                let recipesDetail = try await apiService.fetcManyIdsAsync(with: singleString)
+                detailModels = recipesDetail
+                await MainActor.run(body: {
+                    collectionView.reloadData()
+                })
+            } catch {
+                await MainActor.run(body: {
+                    print(error, error.localizedDescription)
+                })
             }
         }
     }
@@ -76,7 +69,8 @@ final class GenlViewController: UIViewController {
 
 extension GenlViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        didTapCell(at: indexPath.item)
+        let recipeNumber = idArray[indexPath.item]
+        routeToDetailVC(with: recipeNumber)
     }
 }
 
@@ -88,7 +82,7 @@ extension GenlViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenlCollectionViewCell", for: indexPath) as? GenlCollectionViewCell else { fatalError("") }
-
+        
         let model: DetailResponseModel = self.detailModels[indexPath.item]
         
         cell.configureCell(with: model)
@@ -97,9 +91,10 @@ extension GenlViewController: UICollectionViewDataSource {
 }
 
 private extension GenlViewController {
-    
-    func didTapCell(at index: Int) {
-
+    func routeToDetailVC(with id: Int) {
+        let viewController = DetailViewController()
+        viewController.configureDetailViewController(with: id)
+        present(viewController, animated: true)
     }
     
     func setupViewController() {

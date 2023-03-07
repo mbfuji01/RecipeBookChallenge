@@ -56,7 +56,7 @@ final class TrendView: UIView {
         let stringArray = idArray.map { String($0) }
         let singleString = stringArray.joined(separator: ",")
         
-        Task(priority: .utility) {
+        Task(priority: .userInitiated) {
             do {
                 let recipesDetail = try await apiService.fetcManyIdsAsync(with: singleString)
                 detailModels = recipesDetail

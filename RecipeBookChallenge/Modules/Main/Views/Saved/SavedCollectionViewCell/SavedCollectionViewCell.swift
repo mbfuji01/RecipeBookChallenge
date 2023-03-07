@@ -11,7 +11,7 @@ final class SavedCollectionViewCell: UICollectionViewCell {
     
     private let mainImageView = make(UIImageView()) {
         $0.clipsToBounds = true
-        $0.image = UIImage(named: "recentImage")
+        $0.image = UIImage(named: "placeholderImage")
         $0.layer.cornerRadius = 8
     }
     

@@ -1,10 +1,12 @@
 //
-//  CategoryImageModel.swift
+//  CategoryModel.swift
 //  RecipeBookChallenge
 //
 //  Created by Сергей Золотухин on 03.03.2023.
 //
 
-struct CategoryImageModel {
-    let image: String
+import UIKit
+
+struct CategoryModel {
+    let title: String
 }
