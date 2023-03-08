@@ -5,15 +5,16 @@
 //  Created by Сергей Золотухин on 27.02.2023.
 //
 
+protocol MainBrainProtocol {}
+
 final class MainBrain {
+    private var recipes: RecipesResponseModel?
     
-    var models: [CategoryCellViewModel] = [
-        .init(title: "Salad", isSelected: true),
-        .init(title: "Breakfast", isSelected: false),
-        .init(title: "Appetizer", isSelected: false),
-        .init(title: "Noodle", isSelected: false),
-        .init(title: "Dinner", isSelected: false),
-        .init(title: "Soups", isSelected: false)
-    ]
+    private let apiService: APIServiceProtocol
     
+    init(apiService: APIServiceProtocol) {
+        self.apiService = apiService
+    }
 }
+
+extension MainBrain: MainBrainProtocol {}

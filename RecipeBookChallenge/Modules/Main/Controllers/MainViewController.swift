@@ -70,11 +70,13 @@ final class MainViewController: UIViewController {
     }()
     
     private let savedView = SavedView()
-    private let mainBrain = MainBrain()
+    
+    private let mainBrain = MainBrain(apiService: APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager())))
     
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
     
     private var intArray: [Int] = []
+    private var detailModels: RecipesResponseModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,6 +87,8 @@ final class MainViewController: UIViewController {
     @objc
     private func didTapSeeAllTrendsButton() {
         print(#function)
+        guard let model = detailModels else { fatalError() }
+        routeToGenlViewController(with: model)
     }
     
     @objc
@@ -101,6 +105,14 @@ extension MainViewController: TrendViewDelegate {
 }
 
 private extension MainViewController {
+    func routeToGenlViewController(with model: RecipesResponseModel) {
+        let viewController = GenlViewController()
+        guard let titleString = trendLabel.text else { return }
+        //передаем во вью контроллер модель, полученную по названию категории, содержащую 10 рецептов из выбранной категории, и название тайтла
+        viewController.setupGenlViewController(with: model, with: titleString)
+        present(viewController, animated: true)
+    }
+    
     func routeToDetailVC(with id: Int) {
         let viewController = DetailViewController()
         viewController.configureDetailViewController(with: id)
@@ -111,8 +123,9 @@ private extension MainViewController {
         Task(priority: .userInitiated) {
             do {
                 let trends = try await apiService.fetchTrendssAsync()
+                detailModels = trends
                 intArray = trends.results.map({$0.id})
-                    trendView.configureDetailView(with: trends)
+                trendView.configureDetailView(with: trends)
             } catch {
                 await MainActor.run(body: {
                     print(error, error.localizedDescription)

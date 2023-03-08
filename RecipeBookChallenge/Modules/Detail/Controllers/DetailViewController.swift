@@ -102,6 +102,7 @@ private extension DetailViewController {
         caloriesLabel.text = "\(kcalValue) \(kcalUnit)"
         cookTimeLabel.text = model.readyInMinutes.intToString()
         servesLabel.text = model.servings.intToString()
+        difficultyLabel.text = model.id.intToString()
     }
     
     func setupViewController() {
