@@ -10,11 +10,13 @@ protocol APIServiceProtocol {
     func fetchDetailAsync(id: Int) async throws -> DetailResponseModel
     func fetchByCategoriesAsync(with categoryName: String) async throws -> RecipesResponseModel
     func fetcManyIdsAsync(with stringIds: String) async throws -> [DetailResponseModel]
+    func fetchSearch(with stringRequest: String) async throws -> [SearchModel]
 }
 
 final class APIService {
     enum url {
         static let cookMainUrl = "https://api.spoonacular.com/recipes/"
+        static let searchUrl = "https://api.spoonacular.com/recipes/autocomplete"
     }
     
     enum apiKey {
@@ -26,9 +28,10 @@ final class APIService {
         static let keyCooking6 = "50277d5ec39d40019e9bdb57e9afe6a6"
         static let keyCooking7 = "611a18c719a04c4fb245e60ee70336b3"
         static let keyCooking8 = "39e9591ac1334476a6663cf291b70458"
+        static let keyCooking9 = "9702e69019114eeeb0591169b55c9062"
     }
     
-    let apiKeySelect = apiKey.keyCooking8
+    let apiKeySelect = apiKey.keyCooking2
     
     enum adds {
         static let complexSearch = "complexSearch"
@@ -60,7 +63,8 @@ extension APIService: APIServiceProtocol {
     }
     
     func fetchByCategoriesAsync(with categoryName: String) async throws -> RecipesResponseModel {
-        let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKeySelect)\(adds.mealTypes)=\(categoryName)"
+        let reworkedString = categoryName.replacingOccurrences(of: " ", with: "%20")
+        let urlString = "\(url.cookMainUrl)\(adds.complexSearch)?apiKey=\(apiKeySelect)\(adds.mealTypes)=\(reworkedString)"
         return try await networkManager.request(urlString: urlString)
     }
     
@@ -68,10 +72,19 @@ extension APIService: APIServiceProtocol {
         let urlString = "\(url.cookMainUrl)\(adds.manyIds)\(stringIds)&apiKey=\(apiKeySelect)"
         return try await networkManager.request(urlString: urlString)
     }
+    
+    func fetchSearch(with stringRequest: String) async throws -> [SearchModel] {
+        let reworkedString = stringRequest.replacingOccurrences(of: " ", with: "")
+        print(reworkedString)
+        let urlString = "\(url.searchUrl)?query=\(reworkedString)&number=20&apiKey=\(apiKeySelect)"
+        return try await networkManager.request(urlString: urlString)
+    }
 }
 
+//https://api.spoonacular.com/recipes/autocomplete?apiKey=9702e69019114eeeb0591169b55c9062&query=apple&number=25
+
 //https://api.spoonacular.com/recipes/complexSearch?apiKey=39e9591ac1334476a6663cf291b70458&type=salad
-//https://api.spoonacular.com/recipes/informationBulk?ids=715449&apiKey=62d923412e0a409cab1961242371c4d1
+//https://api.spoonacular.com/recipes/informationBulk?ids=7951&apiKey=62d923412e0a409cab1961242371c4d1
 
 //https://api.spoonacular.com/recipes/715449/ingredientWidget.json?apiKey=62d923412e0a409cab1961242371c4d1
 
