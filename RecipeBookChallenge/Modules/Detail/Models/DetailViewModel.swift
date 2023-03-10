@@ -6,3 +6,6 @@
 //
 //this commit is done to check whether my git works or not
 
+struct Test {
+    var test: Int
+}
