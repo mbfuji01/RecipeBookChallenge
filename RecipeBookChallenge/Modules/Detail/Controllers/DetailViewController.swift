@@ -72,10 +72,28 @@ final class DetailViewController: UIViewController {
         setupViewController()
     }
     
-    @objc
-    private func didTapbookmarkButton() {
-        print(#function)
+    func saveDataToUserDefaults(_ data: Any?, forKey key: String) {
+        UserDefaults.standard.set(data, forKey: key)
     }
+    
+    private var detailModels: [DetailResponseModel] = []
+    
+    @objc private func didTapbookmarkButton() {
+        // Save the detailModels to UserDefaults
+        let defaults = UserDefaults.standard
+            
+            let encoder = JSONEncoder()
+            do {
+                let encodedData = try encoder.encode(detailModels)
+                defaults.set(encodedData, forKey: "savedDetailModels")
+                print("Data saved to UserDefaults.")
+            } catch {
+                print("Error encoding data: \(error)")
+            }
+    }
+
+    
+    
     
     func configureDetailViewController(with index: Int) {
         Task {
