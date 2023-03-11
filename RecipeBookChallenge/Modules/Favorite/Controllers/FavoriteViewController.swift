@@ -41,11 +41,13 @@ final class FavoriteViewController: UIViewController {
         super.viewDidLoad()
             setupViewController()
             
-            if let savedModels = loadDetailModelsFromUserDefaults() {
+        if let savedModels = loadDetailModelsFromUserDefaults() {
                 detailModels = savedModels
                 print("Data loaded from UserDefaults.")
+                collectionView.reloadData()
             }
     }
+
     
     func setupGenlViewController(with model: RecipesResponseModel, with title: String) {
         titleLabel.text = title
@@ -74,8 +76,12 @@ final class FavoriteViewController: UIViewController {
 
 extension FavoriteViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let recipeNumber = idArray[indexPath.item]
-        routeToDetailVC(with: recipeNumber)
+        if idArray.count > 0 {
+            let recipeNumber = idArray[indexPath.item] 
+            routeToDetailVC(with: recipeNumber)
+        } else {
+            return
+        }
     }
 }
 
@@ -142,3 +148,5 @@ private func loadDetailModelsFromUserDefaults() -> [DetailResponseModel]? {
     }
     return nil
 }
+
+
