@@ -29,9 +29,11 @@ final class APIService {
         static let keyCooking7 = "611a18c719a04c4fb245e60ee70336b3"
         static let keyCooking8 = "39e9591ac1334476a6663cf291b70458"
         static let keyCooking9 = "9702e69019114eeeb0591169b55c9062"
+		static let keyCooking10 = "2a73f68ec35b4d46b239cf06f54b766a"
+		static let keyCooking11 = "2043207d708f404fbdbe0216f2bb7e5f"
     }
     
-    let apiKeySelect = apiKey.keyCooking5
+    let apiKeySelect = apiKey.keyCooking10
     
     enum adds {
         static let complexSearch = "complexSearch"

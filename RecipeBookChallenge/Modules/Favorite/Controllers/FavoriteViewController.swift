@@ -40,13 +40,13 @@ final class FavoriteViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
             setupViewController()
-            
-        if let savedModels = loadDetailModelsFromUserDefaults() {
-                detailModels = savedModels
-                print("Data loaded from UserDefaults.")
-                collectionView.reloadData()
-            }
+            loadDetailModelsFromUserDefaults()
     }
+	
+	override func viewWillAppear(_ animated: Bool) {
+		setupViewController()
+		loadDetailModelsFromUserDefaults()
+	}
 
     
     func setupGenlViewController(with model: RecipesResponseModel, with title: String) {
@@ -72,6 +72,27 @@ final class FavoriteViewController: UIViewController {
             }
         }
     }
+	
+	private func loadDetailModelsFromUserDefaults() {
+		let savedData: [Any] = UserDefaults.standard.array(forKey: "userFavorite") ?? []
+		let array: [Int] = savedData.map { $0 as? Int ?? 0 }
+		let stringArray = array.map { String($0) }
+		let singleString = stringArray.joined(separator: ",")
+
+		Task(priority: .userInitiated) {
+			do {
+				let recipesDetail = try await apiService.fetcManyIdsAsync(with: singleString)
+				detailModels = recipesDetail
+				await MainActor.run(body: {
+					collectionView.reloadData()
+				})
+			} catch {
+				await MainActor.run(body: {
+					print(error, error.localizedDescription)
+				})
+			}
+		}
+	}
 }
 
 extension FavoriteViewController: UICollectionViewDelegate {
@@ -131,22 +152,6 @@ private extension FavoriteViewController {
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10)
         ])
     }
-}
-
-
-private func loadDetailModelsFromUserDefaults() -> [DetailResponseModel]? {
-    let defaults = UserDefaults.standard
-    
-    if let savedData = defaults.data(forKey: "savedDetailModels") {
-        let decoder = JSONDecoder()
-        do {
-            let decodedData = try decoder.decode([DetailResponseModel].self, from: savedData)
-            return decodedData
-        } catch {
-            print("Error decoding data: \(error)")
-        }
-    }
-    return nil
 }
 
 

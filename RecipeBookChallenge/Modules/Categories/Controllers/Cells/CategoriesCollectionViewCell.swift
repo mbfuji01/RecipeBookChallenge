@@ -17,8 +17,9 @@ final class CategoriesCollectionViewCell: UICollectionViewCell {
     private let descriptionLabel = make(UILabel()) {
         $0.text = "Kelewele Ghanian Recipe"
         $0.textColor = .white
-        $0.font = UIFont.boldSystemFont(ofSize: 16)
+		$0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         $0.numberOfLines = 0
+		$0.backgroundColor = UIColor.black.withAlphaComponent(0.25)
     }
     
     override init(frame: CGRect) {
@@ -31,8 +32,8 @@ final class CategoriesCollectionViewCell: UICollectionViewCell {
     }
     
     func configureCell(with categoryTitle: String) {
-        descriptionLabel.text = categoryTitle
-        mainImageView.image = UIImage(named: "\(categoryTitle)")
+		descriptionLabel.text = categoryTitle
+		mainImageView.image = UIImage(named: "\(categoryTitle)")
     }
 }
 
@@ -49,8 +50,9 @@ private extension CategoriesCollectionViewCell {
             mainImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             
             descriptionLabel.centerYAnchor.constraint(equalTo: mainImageView.centerYAnchor),
-            descriptionLabel.leadingAnchor.constraint(equalTo: mainImageView.leadingAnchor, constant: 10),
-            descriptionLabel.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: -10)
+//            descriptionLabel.leadingAnchor.constraint(equalTo: mainImageView.leadingAnchor, constant: 10),
+//            descriptionLabel.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: -10),
+			descriptionLabel.centerXAnchor.constraint(equalTo: mainImageView.centerXAnchor)
         ])
     }
 }

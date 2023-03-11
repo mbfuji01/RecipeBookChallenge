@@ -92,8 +92,17 @@ final class DetailViewController: UIViewController {
 		let encoder = JSONEncoder()
 		do {
 			let encodedData = try encoder.encode(detailModel)
-			let key = detailModel?.id
-			defaults.set(encodedData, forKey: "\(key)")
+			guard let element = detailModel?.id else {
+				return
+			}
+			var currentArrayId = UserDefaults.standard.object(forKey: "userFavorite") as? [Int] ?? [element]
+			if !currentArrayId.contains(element) {
+				currentArrayId.append(element)
+			} else {
+				currentArrayId.remove(at: currentArrayId.firstIndex(of: element)!)
+			}
+			defaults.set(currentArrayId, forKey: "userFavorite")
+			print(UserDefaults.standard.array(forKey: "userFavorite"))
 			//                bookmarkButton.isSelected = true
 			print("Data saved to UserDefaults.")
 		} catch {
@@ -117,8 +126,9 @@ final class DetailViewController: UIViewController {
                 let detailModel = try await apiService.fetchDetailAsync(id: index)
                 configureDetailViews(with: detailModel)
                 detailView.configureDetailTableView(with: detailModel)
-//                savedProducts = [detailModel]
-                savedProducts.append(detailModel)
+//                savedProducts = detailModel
+//                savedProducts.append(detailModel)
+				self.detailModel = detailModel
                 print(savedProducts)
             } catch {
                 await MainActor.run(body: {
