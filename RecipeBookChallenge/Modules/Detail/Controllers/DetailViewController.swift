@@ -47,7 +47,7 @@ final class DetailViewController: UIViewController {
     
     private lazy var moreButton: UIButton = {
         let button = UIButton(type: .system)
-        button.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapbookmarkButton), for: .touchUpInside)
         button.setImage(UIImage(systemName: "ellipsis.vertical.bubble"), for: .normal)
         button.tintColor = .black
         return button
@@ -85,20 +85,21 @@ final class DetailViewController: UIViewController {
     var detailModel: DetailResponseModel?
     var savedProducts: [DetailResponseModel] = []
     
-    @objc private func didTapbookmarkButton() {
-        // Save the detailModels to UserDefaults
-        let defaults = UserDefaults.standard
-
-            let encoder = JSONEncoder()
-            do {
-                let encodedData = try encoder.encode(detailModel)
-                let key = detailModel?.id
-                defaults.set(encodedData, forKey: "\(key)")
-//                bookmarkButton.isSelected = true
-                print("Data saved to UserDefaults.")
-            } catch {
-                print("Error encoding data: \(error)")
-            }
+	@objc private func didTapbookmarkButton() {
+		// Save the detailModels to UserDefaults
+		let defaults = UserDefaults.standard
+		
+		let encoder = JSONEncoder()
+		do {
+			let encodedData = try encoder.encode(detailModel)
+			let key = detailModel?.id
+			defaults.set(encodedData, forKey: "\(key)")
+			//                bookmarkButton.isSelected = true
+			print("Data saved to UserDefaults.")
+		} catch {
+			print("Error encoding data: \(error)")
+		}
+	}
         
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -129,7 +130,7 @@ final class DetailViewController: UIViewController {
 }
 
 
-private extension DetailViewController {
+extension DetailViewController {
     func routeToMoreInfoVC(with id: Int) {
         let viewController = MoreInfoViewController()
         viewController.configureMoreInformationVC(with: id)
