@@ -39,6 +39,7 @@ final class GenlViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        LoadingOverlay.shared.showOverlay(view: collectionView)
         setupViewController()
     }
     
@@ -55,6 +56,7 @@ final class GenlViewController: UIViewController {
             do {
                 let recipesDetail = try await apiService.fetcManyIdsAsync(with: singleString)
                 detailModels = recipesDetail
+                print("detailModels\(detailModels)")
                 await MainActor.run(body: {
                     collectionView.reloadData()
                 })
@@ -84,8 +86,8 @@ extension GenlViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenlCollectionViewCell", for: indexPath) as? GenlCollectionViewCell else { fatalError("") }
         
         let model: DetailResponseModel = self.detailModels[indexPath.item]
-        
         cell.configureCell(with: model)
+        LoadingOverlay.shared.hideOverlayView()
         return cell
     }
 }

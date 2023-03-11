@@ -9,6 +9,7 @@ import UIKit
 
 protocol TrendViewDelegate: AnyObject {
     func didTapCell(at index: Int)
+    func didTapMoreInfoButton(with index: Int)
 }
 
 final class TrendView: UIView {
@@ -41,6 +42,7 @@ final class TrendView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        LoadingOverlay.shared.showOverlay(view: collectionView)
         setupView()
     }
     
@@ -72,6 +74,12 @@ final class TrendView: UIView {
     }
 }
 
+extension TrendView: TrendCollectionViewCellDelegate {
+    func didTapMoreInfoButton(with index: Int) {
+        delegate?.didTapMoreInfoButton(with: index)
+    }
+}
+
 extension TrendView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         delegate?.didTapCell(at: indexPath.item)
@@ -88,8 +96,9 @@ extension TrendView: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TrendCollectionViewCell", for: indexPath) as? TrendCollectionViewCell else { fatalError("") }
 
         let model: DetailResponseModel = self.detailModels[indexPath.item]
-        
         cell.configureCell(with: model)
+        cell.delegate = self
+        LoadingOverlay.shared.hideOverlayView()
         return cell
     }
 }

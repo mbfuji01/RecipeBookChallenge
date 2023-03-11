@@ -10,11 +10,12 @@ struct DetailResponseModel: Codable {
     let id: Int
     let title: String
     let readyInMinutes: Int
-    let image: String
-    let dishTypes: [String]
+    let image: String?
+    let dishTypes: [String]?
     let servings: Int
     let nutrition: NutritionDetails?
     let extendedIngredients: [IngredientsArray]
+    let instructions: String?
 }
 
 struct DetailModel: Codable {
@@ -40,11 +41,18 @@ struct NutritionDetails: Codable {
 
 struct NutrientsDetails: Codable {
     let amount: Double
-    let unit: String
+    let unit: String?
 }
 
 struct IngredientsArray: Codable {
-    let nameClean: String
+    let nameClean: String?
     let amount: Double
     let unit: String
+}
+
+struct DetailViewModel {
+    let nameClean: String?
+    let amount: Double
+    let unit: String
+    var isSelected: Bool
 }

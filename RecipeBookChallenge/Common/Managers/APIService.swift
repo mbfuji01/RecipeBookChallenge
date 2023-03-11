@@ -40,6 +40,7 @@ final class APIService {
         static let mealTypes = "&type"
         static let ingridientWidget = "/ingredientWidget.json"
         static let manyIds = "informationBulk?ids="
+        static let moreInfo = "/card"
     }
     
     private let networkManager: NetworkManagerProtocol
@@ -70,6 +71,7 @@ extension APIService: APIServiceProtocol {
     
     func fetcManyIdsAsync(with stringIds: String) async throws -> [DetailResponseModel] {
         let urlString = "\(url.cookMainUrl)\(adds.manyIds)\(stringIds)&apiKey=\(apiKeySelect)"
+        print(urlString)
         return try await networkManager.request(urlString: urlString)
     }
     
@@ -79,13 +81,20 @@ extension APIService: APIServiceProtocol {
         let urlString = "\(url.searchUrl)?query=\(reworkedString)&number=20&apiKey=\(apiKeySelect)"
         return try await networkManager.request(urlString: urlString)
     }
+    
+    func fetchMoreInfo(id: Int) async throws -> DetailResponseModel {
+        let urlString = "\(url.cookMainUrl)\(id)\(adds.moreInfo)?apiKey=\(apiKeySelect)"
+        return try await networkManager.request(urlString: urlString)
+    }
 }
 
 //https://api.spoonacular.com/recipes/autocomplete?apiKey=9702e69019114eeeb0591169b55c9062&query=apple&number=25
 
 //https://api.spoonacular.com/recipes/complexSearch?apiKey=39e9591ac1334476a6663cf291b70458&type=salad
-//https://api.spoonacular.com/recipes/informationBulk?ids=7951&apiKey=62d923412e0a409cab1961242371c4d1
 
-//https://api.spoonacular.com/recipes/715449/ingredientWidget.json?apiKey=62d923412e0a409cab1961242371c4d1
+//https://api.spoonacular.com/recipes/informationBulk?ids=715449&apiKey=611a18c719a04c4fb245e60ee70336b3
 
 //https://api.spoonacular.com/recipes/715449/information?includeNutrition=true&apiKey=62d923412e0a409cab1961242371c4d1
+
+
+//https://api.spoonacular.com/recipes/715449/nutritionLabel?apiKey=50277d5ec39d40019e9bdb57e9afe6a6
