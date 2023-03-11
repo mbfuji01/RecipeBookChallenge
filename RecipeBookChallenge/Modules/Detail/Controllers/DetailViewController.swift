@@ -23,6 +23,7 @@ final class DetailViewController: UIViewController {
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(didTapbookmarkButton), for: .touchUpInside)
         button.setImage(UIImage(named: "bookmark")?.withRenderingMode(.alwaysOriginal), for: .normal)
+//        button.setImage(UIImage(named: "bookmarked")?.withRenderingMode(.alwaysOriginal), for: .selected)
         return button
     }()
     
@@ -81,14 +82,27 @@ final class DetailViewController: UIViewController {
         setupViewController()
     }
     
+    var detailModel: DetailResponseModel?
+    var savedProducts: [DetailResponseModel] = []
+    
+    @objc private func didTapbookmarkButton() {
+        // Save the detailModels to UserDefaults
+        let defaults = UserDefaults.standard
+
+            let encoder = JSONEncoder()
+            do {
+                let encodedData = try encoder.encode(detailModel)
+                let key = detailModel?.id
+                defaults.set(encodedData, forKey: "\(key)")
+//                bookmarkButton.isSelected = true
+                print("Data saved to UserDefaults.")
+            } catch {
+                print("Error encoding data: \(error)")
+            }
+        
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         LoadingOverlay.shared.hideOverlayView()
-    }
-    
-    @objc
-    private func didTapbookmarkButton() {
-        print(#function)
     }
     
     @objc
@@ -102,6 +116,9 @@ final class DetailViewController: UIViewController {
                 let detailModel = try await apiService.fetchDetailAsync(id: index)
                 configureDetailViews(with: detailModel)
                 detailView.configureDetailTableView(with: detailModel)
+//                savedProducts = [detailModel]
+                savedProducts.append(detailModel)
+                print(savedProducts)
             } catch {
                 await MainActor.run(body: {
                     print(error, error.localizedDescription)
@@ -110,6 +127,7 @@ final class DetailViewController: UIViewController {
         }
     }
 }
+
 
 private extension DetailViewController {
     func routeToMoreInfoVC(with id: Int) {

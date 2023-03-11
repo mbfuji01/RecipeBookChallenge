@@ -5,7 +5,7 @@
 //  Created by Сергей Золотухин on 02.03.2023.
 //
 
-struct DetailResponseModel: Decodable {
+struct DetailResponseModel: Codable {
     let aggregateLikes: Int
     let id: Int
     let title: String
@@ -18,7 +18,7 @@ struct DetailResponseModel: Decodable {
     let instructions: String?
 }
 
-struct DetailModel {
+struct DetailModel: Codable {
     let aggregateLikes: Int
     let id: Int
     let title: String
@@ -34,16 +34,17 @@ struct DetailModel {
     }
 }
 
-struct NutritionDetails: Decodable {
+
+struct NutritionDetails: Codable {
     let nutrients: [NutrientsDetails]
 }
 
-struct NutrientsDetails: Decodable {
+struct NutrientsDetails: Codable {
     let amount: Double
     let unit: String?
 }
 
-struct IngredientsArray: Decodable {
+struct IngredientsArray: Codable {
     let nameClean: String?
     let amount: Double
     let unit: String
