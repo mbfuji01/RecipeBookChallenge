@@ -91,7 +91,8 @@ final class GenlCollectionViewCell: UICollectionViewCell {
         descriptionLabel.text = model.title
         durationLabel.text = " \(Int(model.readyInMinutes)) mins "
         rateLabel.text = "\(model.aggregateLikes) "
-        mainImageView.downloaded(from: model.image)
+        guard let image = model.image else { return }
+        mainImageView.downloaded(from: image)
     }
     
     @objc

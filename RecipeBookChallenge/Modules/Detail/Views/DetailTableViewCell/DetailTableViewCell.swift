@@ -8,21 +8,25 @@
 import UIKit
 
 final class DetailTableViewCell: UITableViewCell {
-
+    
+    private lazy var checkImageView = make(UIImageView()) {
+        $0.image = UIImage(named: "circle")
+    }
+    
     private let ingredientLabel = make(UILabel()) {
         $0.text = "Apples"
         $0.textColor = .black
         $0.textAlignment = .left
         $0.numberOfLines = 0
     }
-    
+
     private let valueIngredientLabel = make(UILabel()) {
         $0.text = "5"
         $0.textColor = .black
         $0.textAlignment = .right
         $0.numberOfLines = 0
     }
-    
+        
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupCell()
@@ -32,9 +36,17 @@ final class DetailTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(with model: IngredientsArray) {
+    func configureCell(with model: DetailViewModel) {
         ingredientLabel.text = model.nameClean
-        valueIngredientLabel.text = "\(model.amount.doubleToString()) \(model.unit)"
+        let value = model.amount
+        let finalValue = String(format: "%0.2f", value)
+        valueIngredientLabel.text = "\(finalValue) \(model.unit)"
+
+        if model.isSelected {
+            checkImageView.image = UIImage(named: "checkmark.circle")
+        } else {
+            checkImageView.image = UIImage(named: "circle")
+        }
     }
     
     @objc
@@ -50,12 +62,16 @@ final class DetailTableViewCell: UITableViewCell {
 
 private extension DetailTableViewCell {
     func setupCell() {
+        myAddSubView(checkImageView)
         myAddSubView(ingredientLabel)
         myAddSubView(valueIngredientLabel)
         
         NSLayoutConstraint.activate([
+            checkImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            checkImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            
             ingredientLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
-            ingredientLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            ingredientLabel.leadingAnchor.constraint(equalTo: checkImageView.trailingAnchor, constant: 10),
             
             valueIngredientLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
             valueIngredientLabel.trailingAnchor.constraint(equalTo: trailingAnchor)
