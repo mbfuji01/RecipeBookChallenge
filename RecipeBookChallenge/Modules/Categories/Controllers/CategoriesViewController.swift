@@ -59,7 +59,6 @@ extension CategoriesViewController: UICollectionViewDataSource {
         
         let stringValue = categoryArray.categories[indexPath.item]
         cell.configureCell(with: stringValue)
-
         return cell
     }
 }

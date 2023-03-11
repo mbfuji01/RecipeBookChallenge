@@ -26,6 +26,17 @@ final class SearchViewController: UIViewController {
         return tableView
     }()
     
+    private let titleLabel = make(UILabel()) {
+        $0.font = UIFont.boldSystemFont(ofSize: 24)
+        $0.numberOfLines = 0
+        $0.textAlignment = .center
+        $0.text = """
+        Let's find the
+        tastiest recipe
+        🍕
+    """
+    }
+    
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
     
     private var searchResultArray: [SearchModel] = []
@@ -38,6 +49,7 @@ final class SearchViewController: UIViewController {
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        titleLabel.isHidden = true
         let searchString = searchText
         fetchResultArray(with: searchString)
     }
@@ -60,6 +72,7 @@ extension SearchViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "SearchTableViewCell", for: indexPath) as? SearchTableViewCell else { return UITableViewCell() }
         let model = searchResultArray[indexPath.item]
+        cell.selectionStyle = .none
         cell.configureCell(with: model)
         return cell
     }
@@ -95,6 +108,7 @@ private extension SearchViewController {
     func addSubviews() {
         view.myAddSubView(searchBar)
         view.myAddSubView(tableView)
+        view.myAddSubView(titleLabel)
     }
     
     func setConstraints() {
@@ -106,7 +120,11 @@ private extension SearchViewController {
             tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 10),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            titleLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40)
         ])
     }
 }

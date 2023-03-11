@@ -68,7 +68,7 @@ final class MainViewController: UIViewController {
         trendView.delegate = self
         return trendView
     }()
-    
+        
     private let savedView = SavedView()
     
     private let mainBrain = MainBrain(apiService: APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager())))
@@ -98,6 +98,10 @@ final class MainViewController: UIViewController {
 }
 
 extension MainViewController: TrendViewDelegate {
+    func didTapMoreInfoButton(with index: Int) {
+        routeToMoreInfoVC(with: index)
+    }
+
     func didTapCell(at index: Int) {
         let recipeNumber = intArray[index]
         routeToDetailVC(with: recipeNumber)
@@ -116,6 +120,12 @@ private extension MainViewController {
     func routeToDetailVC(with id: Int) {
         let viewController = DetailViewController()
         viewController.configureDetailViewController(with: id)
+        present(viewController, animated: true)
+    }
+    
+    func routeToMoreInfoVC(with id: Int) {
+        let viewController = MoreInfoViewController()
+        viewController.configureMoreInformationVC(with: id)
         present(viewController, animated: true)
     }
     

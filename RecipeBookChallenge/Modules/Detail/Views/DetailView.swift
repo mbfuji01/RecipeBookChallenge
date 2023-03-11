@@ -20,9 +20,9 @@ final class DetailView: UIView {
         tableView.register(DetailTableViewCell.self, forCellReuseIdentifier: "DetailTableViewCell")
         return tableView
     }()
-    
-    var detailViewModel: [IngredientsArray] = []
-    
+        
+    var detailViewModel: [DetailViewModel] = []
+        
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
@@ -33,21 +33,34 @@ final class DetailView: UIView {
     }
     
     func configureDetailTableView(with model: DetailResponseModel) {
-        detailViewModel = model.extendedIngredients
+        detailViewModel = model.extendedIngredients.map({ elem in
+                .init(nameClean: elem.nameClean, amount: elem.amount, unit: elem.unit, isSelected: false)
+        })
         tableView.reloadData()
     }
 }
 
-extension DetailView: UITableViewDelegate {}
+extension DetailView: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if detailViewModel[indexPath.item].isSelected {
+            detailViewModel[indexPath.item].isSelected = false
+        } else {
+            detailViewModel[indexPath.item].isSelected = true
+        }
+        tableView.reloadData()
+    }
+}
 
 extension DetailView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return detailViewModel.count
+
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as! DetailTableViewCell
         let model = detailViewModel[indexPath.item]
+        cell.selectionStyle = .none
         cell.configureCell(with: model)
         return cell
     }

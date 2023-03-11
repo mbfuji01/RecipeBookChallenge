@@ -17,7 +17,6 @@ final class DetailViewController: UIViewController {
     private let mainImageView = make(UIImageView()) {
         $0.layer.cornerRadius = 16
         $0.clipsToBounds = true
-        $0.image = UIImage(named: "placeholderImage")
     }
     
     private lazy var bookmarkButton: UIButton = {
@@ -39,17 +38,19 @@ final class DetailViewController: UIViewController {
         $0.numberOfLines = 0
     }
     
-    private let difficultyLabel = make(UILabel()) {
-        $0.textColor = .black
-        $0.textAlignment = .center
-        $0.numberOfLines = 0
-    }
-    
     private let servesLabel = make(UILabel()) {
         $0.textColor = .black
         $0.textAlignment = .center
         $0.numberOfLines = 0
     }
+    
+    private lazy var moreButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
+        button.setImage(UIImage(systemName: "ellipsis.vertical.bubble"), for: .normal)
+        button.tintColor = .black
+        return button
+    }()
     
     private let shortInformationStackView = make(UIStackView()) {
         $0.spacing = 1
@@ -57,7 +58,14 @@ final class DetailViewController: UIViewController {
         $0.axis = .horizontal
     }
     
+    private let shortAndButtonStackView = make(UIStackView()) {
+        $0.spacing = 25
+        $0.distribution = .fillProportionally
+        $0.axis = .horizontal
+    }
+    
     private let detailView = DetailView()
+    private var indexValue: Int = 0
     
     private let mainStackView = make(UIStackView()) {
         $0.spacing = 1
@@ -69,12 +77,23 @@ final class DetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        LoadingOverlay.shared.showOverlay(view: mainImageView)
         setupViewController()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        LoadingOverlay.shared.hideOverlayView()
     }
     
     @objc
     private func didTapbookmarkButton() {
         print(#function)
+    }
+    
+    @objc
+    private func didTapMoreButton() {
+        routeToMoreInfoVC(with: indexValue)
     }
     
     func configureDetailViewController(with index: Int) {
@@ -93,16 +112,22 @@ final class DetailViewController: UIViewController {
 }
 
 private extension DetailViewController {
+    func routeToMoreInfoVC(with id: Int) {
+        let viewController = MoreInfoViewController()
+        viewController.configureMoreInformationVC(with: id)
+        present(viewController, animated: true)
+    }
+    
     func configureDetailViews(with model: DetailResponseModel) {
         guard let kcalValue = model.nutrition?.nutrients[.zero].amount else { return }
         guard let kcalUnit = model.nutrition?.nutrients[.zero].unit else { return }
-        
+        indexValue = model.id
         titleLabel.text = model.title
-        mainImageView.downloaded(from: model.image)
-        caloriesLabel.text = "\(kcalValue) \(kcalUnit)"
-        cookTimeLabel.text = model.readyInMinutes.intToString()
-        servesLabel.text = model.servings.intToString()
-        difficultyLabel.text = model.id.intToString()
+        guard let image = model.image else { return }
+        mainImageView.downloaded(from: image)
+        caloriesLabel.text = "\(Int(kcalValue)) \(kcalUnit)"
+        cookTimeLabel.text = "\(model.readyInMinutes.intToString()) mins"
+        servesLabel.text = "\(model.servings.intToString()) serves"
     }
     
     func setupViewController() {
@@ -114,12 +139,14 @@ private extension DetailViewController {
     func addSubviews() {
         shortInformationStackView.addArrangedSubview(caloriesLabel)
         shortInformationStackView.addArrangedSubview(cookTimeLabel)
-        shortInformationStackView.addArrangedSubview(difficultyLabel)
         shortInformationStackView.addArrangedSubview(servesLabel)
+        
+        shortAndButtonStackView.addArrangedSubview(shortInformationStackView)
+        shortAndButtonStackView.addArrangedSubview(moreButton)
         
         mainStackView.addArrangedSubview(titleLabel)
         mainStackView.addArrangedSubview(mainImageView)
-        mainStackView.addArrangedSubview(shortInformationStackView)
+        mainStackView.addArrangedSubview(shortAndButtonStackView)
         mainStackView.addArrangedSubview(detailView)
         
         view.myAddSubView(mainStackView)
@@ -138,7 +165,8 @@ private extension DetailViewController {
             
             titleLabel.heightAnchor.constraint(equalToConstant: 90),
             mainImageView.heightAnchor.constraint(equalToConstant: 220),
-            shortInformationStackView.heightAnchor.constraint(equalToConstant: 90)
+            shortInformationStackView.heightAnchor.constraint(equalToConstant: 90),
+            moreButton.widthAnchor.constraint(equalToConstant: 30)
         ])
     }
 }

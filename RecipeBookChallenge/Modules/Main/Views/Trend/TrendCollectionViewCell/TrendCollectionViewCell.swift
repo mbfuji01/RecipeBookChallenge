@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol TrendCollectionViewCellDelegate: AnyObject {
+    func didTapMoreInfoButton(with index: Int)
+}
+
 final class TrendCollectionViewCell: UICollectionViewCell {
     
     private let mainImageView = make(UIImageView()) {
@@ -85,6 +89,10 @@ final class TrendCollectionViewCell: UICollectionViewCell {
         $0.axis = .vertical
     }
     
+    weak var delegate: TrendCollectionViewCellDelegate?
+    
+    private var indexValue: Int = 0
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupCell()
@@ -98,15 +106,18 @@ final class TrendCollectionViewCell: UICollectionViewCell {
         descriptionLabel.text = model.title
         durationLabel.text = " \(Int(model.readyInMinutes)) mins "
         rateLabel.text = "\(model.aggregateLikes) "
-        mainImageView.downloaded(from: model.image)
+        guard let image = model.image else { return }
+        mainImageView.downloaded(from: image)
         
-        let dishString = model.dishTypes.joined(separator: ", ")
-        subDescriptionLabel.text = "\(dishString)"
+        let dishString = model.dishTypes?.joined(separator: ", ")
+        subDescriptionLabel.text = "\(String(describing: dishString))"
+        indexValue = model.id
     }
     
     @objc
     private func didTapMoreButton() {
         print(#function)
+        delegate?.didTapMoreInfoButton(with: indexValue)
     }
     
     @objc
