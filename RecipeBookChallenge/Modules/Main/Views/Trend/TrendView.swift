@@ -10,6 +10,7 @@ import UIKit
 protocol TrendViewDelegate: AnyObject {
     func didTapCell(at index: Int)
     func didTapMoreInfoButton(with index: Int)
+    func didTapBookmarkButton(with index: Int)
 }
 
 final class TrendView: UIView {
@@ -34,15 +35,14 @@ final class TrendView: UIView {
     weak var delegate: TrendViewDelegate?
     
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
+    private lazy var userDefaultsManager: UserDefaultsManagerProtocol = UserDefaultsManager(apiService: apiService)
     
-    var viewModel: RecipesResponseModel?
-    
+    private var viewModel: RecipesResponseModel?
     private var idArray: [Int] = []
-    private var detailModels: [DetailResponseModel] = []
+    private var trendViewModels: [TrendsViewModel] = []
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        LoadingOverlay.shared.showOverlay(view: collectionView)
         setupView()
     }
     
@@ -60,8 +60,17 @@ final class TrendView: UIView {
         
         Task(priority: .userInitiated) {
             do {
-                let recipesDetail = try await apiService.fetcManyIdsAsync(with: singleString)
-                detailModels = recipesDetail
+                let model = try await apiService.fetchManyIds(with: singleString)
+                trendViewModels = model.map({
+                    TrendsViewModel(aggregateLikes: $0.aggregateLikes,
+                                    id: $0.id,
+                                    title: $0.title,
+                                    readyInMinutes: $0.readyInMinutes,
+                                    image: $0.image,
+                                    dishTypes: $0.dishTypes,
+                                    isSaved: false
+                    )
+                })
                 await MainActor.run(body: {
                     collectionView.reloadData()
                 })
@@ -75,6 +84,11 @@ final class TrendView: UIView {
 }
 
 extension TrendView: TrendCollectionViewCellDelegate {
+    func didTapBookmarkButton(with index: Int) {
+        delegate?.didTapBookmarkButton(with: index)
+        collectionView.reloadData()
+    }
+    
     func didTapMoreInfoButton(with index: Int) {
         delegate?.didTapMoreInfoButton(with: index)
     }
@@ -88,14 +102,22 @@ extension TrendView: UICollectionViewDelegate {
 
 extension TrendView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        detailModels.count
+        trendViewModels.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TrendCollectionViewCell", for: indexPath) as? TrendCollectionViewCell else { fatalError("") }
-
-        let model: DetailResponseModel = self.detailModels[indexPath.item]
+        
+        let savedIdArray = userDefaultsManager.getIdArray()
+        var model: TrendsViewModel = self.trendViewModels[indexPath.item]
+        
+        savedIdArray.forEach { elem in
+            if model.id == elem {
+                model.isSaved = true
+            }
+        }
+        
         cell.configureCell(with: model)
         cell.delegate = self
         LoadingOverlay.shared.hideOverlayView()
@@ -104,6 +126,7 @@ extension TrendView: UICollectionViewDataSource {
 }
 
 private extension TrendView {
+    
     func setupView() {
         addSubviews()
         setConstraints()

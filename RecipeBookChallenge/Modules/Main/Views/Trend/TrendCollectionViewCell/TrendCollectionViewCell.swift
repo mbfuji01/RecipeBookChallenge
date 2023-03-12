@@ -9,6 +9,7 @@ import UIKit
 
 protocol TrendCollectionViewCellDelegate: AnyObject {
     func didTapMoreInfoButton(with index: Int)
+    func didTapBookmarkButton(with index: Int)
 }
 
 final class TrendCollectionViewCell: UICollectionViewCell {
@@ -21,7 +22,7 @@ final class TrendCollectionViewCell: UICollectionViewCell {
     
     private let rateImageView = make(UIImageView()) {
         $0.clipsToBounds = true
-        $0.image = UIImage(systemName: "hand.thumbsup.fill")
+        $0.image = UIImage(systemName: "hand.thumbsup")
         $0.tintColor = .black
     }
     
@@ -36,14 +37,14 @@ final class TrendCollectionViewCell: UICollectionViewCell {
         $0.distribution = .fill
         $0.alignment = .trailing
         $0.axis = .horizontal
-        $0.backgroundColor = .lightGray
+        $0.backgroundColor = UIColor.black.withAlphaComponent(0.25)
         $0.layer.cornerRadius = 7
     }
 
     private lazy var bookmarkButton: UIButton = {
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(didTapbookmarkButton), for: .touchUpInside)
-        button.setImage(UIImage(named: "bookmark")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        button.setImage(UIImage(named: "bookmark1")?.withRenderingMode(.alwaysOriginal), for: .normal)
         return button
     }()
     
@@ -51,7 +52,7 @@ final class TrendCollectionViewCell: UICollectionViewCell {
         $0.text = " 2:10 "
         $0.textColor = .white
         $0.numberOfLines = 0
-        $0.backgroundColor = .lightGray
+        $0.backgroundColor = UIColor.black.withAlphaComponent(0.25)
         $0.layer.cornerRadius = 7
         $0.clipsToBounds = true
     }
@@ -92,6 +93,7 @@ final class TrendCollectionViewCell: UICollectionViewCell {
     weak var delegate: TrendCollectionViewCellDelegate?
     
     private var indexValue: Int = 0
+    private var trendsViewModel: TrendsViewModel?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -102,27 +104,35 @@ final class TrendCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configureCell(with model: DetailResponseModel) {
+    func configureCell(with model: TrendsViewModel) {
+        
+        trendsViewModel = model
+        
         descriptionLabel.text = model.title
         durationLabel.text = " \(Int(model.readyInMinutes)) mins "
         rateLabel.text = "\(model.aggregateLikes) "
         guard let image = model.image else { return }
         mainImageView.downloaded(from: image)
         
-        let dishString = model.dishTypes?.joined(separator: ", ")
+        let dishString = model.dishTypes.joined(separator: ", ")
         subDescriptionLabel.text = "\(String(describing: dishString))"
         indexValue = model.id
+        
+        if model.isSaved {
+            bookmarkButton.setImage(UIImage(named: "redBookmark")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        } else {
+            bookmarkButton.setImage(UIImage(named: "bookmark1")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        }
     }
     
     @objc
     private func didTapMoreButton() {
-        print(#function)
         delegate?.didTapMoreInfoButton(with: indexValue)
     }
     
     @objc
     private func didTapbookmarkButton() {
-        print(#function)
+        delegate?.didTapBookmarkButton(with: indexValue)
     }
 }
 
@@ -153,8 +163,10 @@ private extension TrendCollectionViewCell {
             rateStackView.topAnchor.constraint(equalTo: mainImageView.topAnchor, constant: 10),
             rateStackView.leadingAnchor.constraint(equalTo: mainImageView.leadingAnchor, constant: 10),
             
-            bookmarkButton.topAnchor.constraint(equalTo: mainImageView.topAnchor),
-            bookmarkButton.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor),
+            bookmarkButton.topAnchor.constraint(equalTo: mainImageView.topAnchor, constant: 10),
+            bookmarkButton.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: -10),
+            bookmarkButton.heightAnchor.constraint(equalToConstant: 32),
+            bookmarkButton.widthAnchor.constraint(equalToConstant: 32),
             
             durationLabel.bottomAnchor.constraint(equalTo: mainImageView.bottomAnchor, constant: -10),
             durationLabel.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: -10),

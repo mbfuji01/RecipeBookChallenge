@@ -36,7 +36,7 @@ final class DetailTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(with model: DetailViewModel) {
+    func configureCell(with model: DetailCellViewModel) {
         ingredientLabel.text = model.nameClean
         let value = model.amount
         let finalValue = String(format: "%0.2f", value)
@@ -47,16 +47,6 @@ final class DetailTableViewCell: UITableViewCell {
         } else {
             checkImageView.image = UIImage(named: "circle")
         }
-    }
-    
-    @objc
-    private func didTapMoreButton() {
-        print(#function)
-    }
-    
-    @objc
-    private func didTapbookmarkButton() {
-        print(#function)
     }
 }
 

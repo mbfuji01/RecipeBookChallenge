@@ -50,8 +50,6 @@ private extension CategoriesCollectionViewCell {
             mainImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             
             descriptionLabel.centerYAnchor.constraint(equalTo: mainImageView.centerYAnchor),
-//            descriptionLabel.leadingAnchor.constraint(equalTo: mainImageView.leadingAnchor, constant: 10),
-//            descriptionLabel.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: -10),
 			descriptionLabel.centerXAnchor.constraint(equalTo: mainImageView.centerXAnchor)
         ])
     }

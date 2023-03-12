@@ -31,12 +31,10 @@ final class SearchTableViewCell: UITableViewCell {
     
     @objc
     private func didTapMoreButton() {
-        print(#function)
     }
     
     @objc
     private func didTapbookmarkButton() {
-        print(#function)
     }
 }
 

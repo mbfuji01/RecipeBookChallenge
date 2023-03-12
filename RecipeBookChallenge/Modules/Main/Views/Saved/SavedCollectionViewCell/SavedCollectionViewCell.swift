@@ -22,13 +22,6 @@ final class SavedCollectionViewCell: UICollectionViewCell {
         $0.numberOfLines = 0
     }
     
-    private let subDescriptionLabel = make(UILabel()) {
-        $0.text = "dinner, main dish"
-        $0.numberOfLines = 0
-        $0.textColor = .lightGray
-        $0.font = UIFont.systemFont(ofSize: 12)
-    }
-    
     private let mainStackView = make(UIStackView()) {
         $0.spacing = 5
         $0.distribution = .fill
@@ -44,8 +37,10 @@ final class SavedCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell() {
-
+    func configureCell(with model: SavedViewModel) {
+        guard let image = model.image else { return }
+        mainImageView.downloaded(from: image)
+        descriptionLabel.text = model.title
     }
 }
 
@@ -53,7 +48,6 @@ private extension SavedCollectionViewCell {
     func setupCell() {
         mainStackView.addArrangedSubview(mainImageView)
         mainStackView.addArrangedSubview(descriptionLabel)
-        mainStackView.addArrangedSubview(subDescriptionLabel)
         
         contentView.myAddSubView(mainStackView)
         

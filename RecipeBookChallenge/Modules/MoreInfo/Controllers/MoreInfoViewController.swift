@@ -30,8 +30,8 @@ final class MoreInfoViewController: UIViewController {
     func configureMoreInformationVC(with index: Int) {
         Task(priority: .userInitiated) {
             do {
-                let response = try await apiService.fetchDetailAsync(id: index)
-                summaryLabel.text = response.instructions
+                let response = try await apiService.fetchInstruction(id: index)
+                summaryLabel.text = response.instructions?.html2String
             } catch {
                 await MainActor.run(body: {
                     print(error, error.localizedDescription)

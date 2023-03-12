@@ -68,36 +68,53 @@ final class MainViewController: UIViewController {
         trendView.delegate = self
         return trendView
     }()
-        
-    private let savedView = SavedView()
-    
+            
+    private lazy var savedView: SavedView = {
+        let savedView = SavedView()
+        savedView.delegate = self
+        return savedView
+    }()
+
     private let mainBrain = MainBrain(apiService: APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager())))
-    
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
+    private lazy var userDefaultsManager: UserDefaultsManagerProtocol = UserDefaultsManager(apiService: apiService)
     
     private var intArray: [Int] = []
     private var detailModels: RecipesResponseModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        LoadingOverlay.shared.showOverlay(view: trendView)
+        LoadingOverlay2.shared.showOverlay(view: savedView)
+
         setupViewController()
-        fetchTrendsAsync()
+        fetchTrends()
+        configureSaved()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        configureSaved()
     }
     
     @objc
     private func didTapSeeAllTrendsButton() {
-        print(#function)
         guard let model = detailModels else { fatalError() }
         routeToGenlViewController(with: model)
     }
     
     @objc
     private func didTapSeeAllsavedButton() {
-        print(#function)
+        routeToSavedViewController()
     }
 }
 
 extension MainViewController: TrendViewDelegate {
+    func didTapBookmarkButton(with index: Int) {
+        userDefaultsManager.setUserDefaults(with: index)
+        configureSaved()
+    }
+    
     func didTapMoreInfoButton(with index: Int) {
         routeToMoreInfoVC(with: index)
     }
@@ -105,6 +122,12 @@ extension MainViewController: TrendViewDelegate {
     func didTapCell(at index: Int) {
         let recipeNumber = intArray[index]
         routeToDetailVC(with: recipeNumber)
+    }
+}
+
+extension MainViewController: SavedViewDelegate {
+    func didTapSavedCell(with recipeId: Int) {
+        routeToDetailVC(with: recipeId)
     }
 }
 
@@ -117,10 +140,16 @@ private extension MainViewController {
         present(viewController, animated: true)
     }
     
+    func routeToSavedViewController() {
+        let viewController = FavoriteViewController()
+        present(viewController, animated: true)
+    }
+    
     func routeToDetailVC(with id: Int) {
         let viewController = DetailViewController()
         viewController.configureDetailViewController(with: id)
-        present(viewController, animated: true)
+//        present(viewController, animated: true)
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     func routeToMoreInfoVC(with id: Int) {
@@ -129,13 +158,28 @@ private extension MainViewController {
         present(viewController, animated: true)
     }
     
-    func fetchTrendsAsync() {
+    func fetchTrends() {
         Task(priority: .userInitiated) {
             do {
-                let trends = try await apiService.fetchTrendssAsync()
+                let trends = try await apiService.fetchTrends()
                 detailModels = trends
                 intArray = trends.results.map({$0.id})
                 trendView.configureDetailView(with: trends)
+            } catch {
+                await MainActor.run(body: {
+                    print(error, error.localizedDescription)
+                })
+            }
+        }
+    }
+    
+    func configureSaved() {
+        let singleString = userDefaultsManager.getData()
+        
+        Task(priority: .userInitiated) {
+            do {
+                let recipesDetail = try await apiService.fetchManyIds(with: singleString)
+                savedView.configureSavedView(with: recipesDetail)
             } catch {
                 await MainActor.run(body: {
                     print(error, error.localizedDescription)

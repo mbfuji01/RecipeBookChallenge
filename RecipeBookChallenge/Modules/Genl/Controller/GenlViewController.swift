@@ -33,9 +33,10 @@ final class GenlViewController: UIViewController {
     }()
     
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
+    private lazy var userDefaultsManager: UserDefaultsManagerProtocol = UserDefaultsManager(apiService: apiService)
     
     private var idArray: [Int] = []
-    private var detailModels: [DetailResponseModel] = []
+    private var detailModels: [GenlViewModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,9 +55,15 @@ final class GenlViewController: UIViewController {
             let stringArray = array.map { String($0) }
             let singleString = stringArray.joined(separator: ",")
             do {
-                let recipesDetail = try await apiService.fetcManyIdsAsync(with: singleString)
-                detailModels = recipesDetail
-                print("detailModels\(detailModels)")
+                let modelView = try await apiService.fetchManyIds(with: singleString)
+                detailModels = modelView.map({ GenlViewModel(aggregateLikes: $0.aggregateLikes,
+                                                             id: $0.id,
+                                                             title: $0.title,
+                                                             readyInMinutes: $0.readyInMinutes,
+                                                             image: $0.image,
+                                                             isSaved: false
+                )
+                })
                 await MainActor.run(body: {
                     collectionView.reloadData()
                 })
@@ -85,14 +92,40 @@ extension GenlViewController: UICollectionViewDataSource {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenlCollectionViewCell", for: indexPath) as? GenlCollectionViewCell else { fatalError("") }
         
-        let model: DetailResponseModel = self.detailModels[indexPath.item]
+        var model: GenlViewModel = self.detailModels[indexPath.item]
+        let savedIdArray = userDefaultsManager.getIdArray()
+        
+        savedIdArray.forEach { elem in
+            if model.id == elem {
+                model.isSaved = true
+            }
+        }
+        
         cell.configureCell(with: model)
+        cell.delegate = self
         LoadingOverlay.shared.hideOverlayView()
         return cell
     }
 }
 
+extension GenlViewController: GenlCollectionViewCellDelegate {
+    func didTapMoreButton(with index: Int) {
+        routeToMoreInfoVC(with: index)
+    }
+    
+    func didTapBookmarkButton(with index: Int) {
+        userDefaultsManager.setUserDefaults(with: index)
+        collectionView.reloadData()
+    }
+}
+
 private extension GenlViewController {
+    func routeToMoreInfoVC(with id: Int) {
+        let viewController = MoreInfoViewController()
+        viewController.configureMoreInformationVC(with: id)
+        present(viewController, animated: true)
+    }
+    
     func routeToDetailVC(with id: Int) {
         let viewController = DetailViewController()
         viewController.configureDetailViewController(with: id)
