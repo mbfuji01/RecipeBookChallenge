@@ -7,6 +7,11 @@
 
 import UIKit
 
+protocol GenlCollectionViewCellDelegate: AnyObject {
+    func didTapBookmarkButton(with index: Int)
+    func didTapMoreButton(with index: Int)
+}
+
 final class GenlCollectionViewCell: UICollectionViewCell {
     
     private let mainImageView = make(UIImageView()) {
@@ -17,7 +22,7 @@ final class GenlCollectionViewCell: UICollectionViewCell {
     
     private let rateImageView = make(UIImageView()) {
         $0.clipsToBounds = true
-        $0.image = UIImage(systemName: "hand.thumbsup.fill")
+        $0.image = UIImage(systemName: "hand.thumbsup")
         $0.tintColor = .black
     }
     
@@ -39,7 +44,7 @@ final class GenlCollectionViewCell: UICollectionViewCell {
     private lazy var bookmarkButton: UIButton = {
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(didTapbookmarkButton), for: .touchUpInside)
-        button.setImage(UIImage(named: "bookmark")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        button.setImage(UIImage(named: "bookmark1")?.withRenderingMode(.alwaysOriginal), for: .normal)
         return button
     }()
     
@@ -78,6 +83,9 @@ final class GenlCollectionViewCell: UICollectionViewCell {
         $0.axis = .vertical
     }
     
+    weak var delegate: GenlCollectionViewCellDelegate?
+    private var recipeIndex: Int = 0
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupCell()
@@ -87,22 +95,29 @@ final class GenlCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(with model: DetailResponseModel) {
+    func configureCell(with model: GenlViewModel) {
+        recipeIndex = model.id
         descriptionLabel.text = model.title
         durationLabel.text = " \(Int(model.readyInMinutes)) mins "
         rateLabel.text = "\(model.aggregateLikes) "
         guard let image = model.image else { return }
         mainImageView.downloaded(from: image)
+        
+        if model.isSaved {
+            bookmarkButton.setImage(UIImage(named: "redBookmark")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        } else {
+            bookmarkButton.setImage(UIImage(named: "bookmark1")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        }
     }
     
     @objc
     private func didTapMoreButton() {
-        print(#function)
+        delegate?.didTapMoreButton(with: recipeIndex)
     }
     
     @objc
     private func didTapbookmarkButton() {
-        print(#function)
+        delegate?.didTapBookmarkButton(with: recipeIndex)
     }
 }
 
@@ -132,12 +147,14 @@ private extension GenlCollectionViewCell {
             rateStackView.topAnchor.constraint(equalTo: mainImageView.topAnchor, constant: 10),
             rateStackView.leadingAnchor.constraint(equalTo: mainImageView.leadingAnchor, constant: 10),
             
-            bookmarkButton.topAnchor.constraint(equalTo: mainImageView.topAnchor),
-            bookmarkButton.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor),
+            bookmarkButton.topAnchor.constraint(equalTo: mainImageView.topAnchor, constant: 10),
+            bookmarkButton.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: -10),
+            bookmarkButton.heightAnchor.constraint(equalToConstant: 32),
+            bookmarkButton.widthAnchor.constraint(equalToConstant: 32),
             
             durationLabel.bottomAnchor.constraint(equalTo: mainImageView.bottomAnchor, constant: -10),
             durationLabel.trailingAnchor.constraint(equalTo: mainImageView.trailingAnchor, constant: -10),
-            mainImageView.heightAnchor.constraint(equalToConstant: 160),
+            mainImageView.heightAnchor.constraint(equalToConstant: 200),
             moreButton.widthAnchor.constraint(equalToConstant: 40)
         ])
     }

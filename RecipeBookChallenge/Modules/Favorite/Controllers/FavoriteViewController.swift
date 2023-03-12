@@ -17,7 +17,7 @@ final class FavoriteViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.frame.width - 30, height: 220)
+        layout.itemSize = CGSize(width: view.frame.width - 30, height: 250)
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
         layout.scrollDirection = .vertical
@@ -33,35 +33,36 @@ final class FavoriteViewController: UIViewController {
     }()
     
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
+    private lazy var userDefaultsManager: UserDefaultsManagerProtocol = UserDefaultsManager(apiService: apiService)
     
     private var idArray: [Int] = []
-    private var detailModels: [DetailResponseModel] = []
+    private var detailModels: [GenlViewModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-            setupViewController()
-            loadDetailModelsFromUserDefaults()
-    }
-	
-	override func viewWillAppear(_ animated: Bool) {
-		setupViewController()
-		loadDetailModelsFromUserDefaults()
-	}
-
-    
-    func setupGenlViewController(with model: RecipesResponseModel, with title: String) {
-        titleLabel.text = title
-        idArray = model.results.map { $0.id }
-        configureGenlView(with: model, with: idArray)
+        LoadingOverlay.shared.showOverlay(view: collectionView)
+        setupViewController()
     }
     
-    func configureGenlView(with model: RecipesResponseModel, with array: [Int]) {
+    override func viewWillAppear(_ animated: Bool) {
+        loadDetailModelsFromUserDefaults()
+    }
+ 
+    private func loadDetailModelsFromUserDefaults() {
+        let singleString = userDefaultsManager.getData()
+        
         Task(priority: .userInitiated) {
-            let stringArray = array.map { String($0) }
-            let singleString = stringArray.joined(separator: ",")
             do {
-                let recipesDetail = try await apiService.fetcManyIdsAsync(with: singleString)
-                detailModels = recipesDetail
+                let model = try await apiService.fetchManyIds(with: singleString)
+                let genlArray = model.map { GenlViewModel(aggregateLikes: $0.aggregateLikes,
+                                                          id: $0.id,
+                                                          title: $0.title,
+                                                          readyInMinutes: $0.readyInMinutes,
+                                                          image: $0.image,
+                                                          isSaved: false
+                )
+                }
+                detailModels = reverseArray(with: genlArray)
                 await MainActor.run(body: {
                     collectionView.reloadData()
                 })
@@ -72,33 +73,12 @@ final class FavoriteViewController: UIViewController {
             }
         }
     }
-	
-	private func loadDetailModelsFromUserDefaults() {
-		let savedData: [Any] = UserDefaults.standard.array(forKey: "userFavorite") ?? []
-		let array: [Int] = savedData.map { $0 as? Int ?? 0 }
-		let stringArray = array.map { String($0) }
-		let singleString = stringArray.joined(separator: ",")
-
-		Task(priority: .userInitiated) {
-			do {
-				let recipesDetail = try await apiService.fetcManyIdsAsync(with: singleString)
-				detailModels = recipesDetail
-				await MainActor.run(body: {
-					collectionView.reloadData()
-				})
-			} catch {
-				await MainActor.run(body: {
-					print(error, error.localizedDescription)
-				})
-			}
-		}
-	}
 }
 
 extension FavoriteViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if idArray.count > 0 {
-            let recipeNumber = idArray[indexPath.item] 
+        if detailModels.count > 0 {
+            let recipeNumber = detailModels[indexPath.item].id
             routeToDetailVC(with: recipeNumber)
         } else {
             return
@@ -115,14 +95,48 @@ extension FavoriteViewController: UICollectionViewDataSource {
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GenlCollectionViewCell", for: indexPath) as? GenlCollectionViewCell else { fatalError("") }
         
-        let model: DetailResponseModel = self.detailModels[indexPath.item]
+        var model: GenlViewModel = self.detailModels[indexPath.item]
+        let savedIdArray = userDefaultsManager.getIdArray()
+        
+        savedIdArray.forEach { elem in
+            if model.id == elem {
+                model.isSaved = true
+            }
+        }
         
         cell.configureCell(with: model)
+        cell.delegate = self
+        LoadingOverlay.shared.hideOverlayView()
         return cell
     }
 }
 
+extension FavoriteViewController: GenlCollectionViewCellDelegate {
+    func didTapMoreButton(with index: Int) {
+        routeToMoreInfoVC(with: index)
+    }
+    
+    func didTapBookmarkButton(with index: Int) {
+        userDefaultsManager.setUserDefaults(with: index)
+        loadDetailModelsFromUserDefaults()
+    }
+}
+
 private extension FavoriteViewController {
+    func reverseArray(with array: [GenlViewModel]) -> [GenlViewModel] {
+        var reversedArray = [GenlViewModel]()
+        for value in array.reversed() {
+            reversedArray += [value]
+        }
+        return reversedArray
+    }
+    
+    func routeToMoreInfoVC(with id: Int) {
+        let viewController = MoreInfoViewController()
+        viewController.configureMoreInformationVC(with: id)
+        present(viewController, animated: true)
+    }
+    
     func routeToDetailVC(with id: Int) {
         let viewController = DetailViewController()
         viewController.configureDetailViewController(with: id)

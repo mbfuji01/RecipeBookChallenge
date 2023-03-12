@@ -58,8 +58,6 @@ extension SearchViewController: UISearchBarDelegate {
 extension SearchViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let recipeNumber = searchResultArray[indexPath.item].id
-        print(recipeNumber)
-        print(searchResultArray)
         routeToDetailVC(with: recipeNumber)
     }
 }

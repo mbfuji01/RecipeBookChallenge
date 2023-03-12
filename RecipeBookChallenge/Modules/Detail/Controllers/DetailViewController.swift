@@ -23,7 +23,6 @@ final class DetailViewController: UIViewController {
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(didTapbookmarkButton), for: .touchUpInside)
         button.setImage(UIImage(named: "bookmark")?.withRenderingMode(.alwaysOriginal), for: .normal)
-//        button.setImage(UIImage(named: "bookmarked")?.withRenderingMode(.alwaysOriginal), for: .selected)
         return button
     }()
     
@@ -47,7 +46,7 @@ final class DetailViewController: UIViewController {
     
     private lazy var moreButton: UIButton = {
         let button = UIButton(type: .system)
-        button.addTarget(self, action: #selector(didTapbookmarkButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
         button.setImage(UIImage(systemName: "ellipsis.vertical.bubble"), for: .normal)
         button.tintColor = .black
         return button
@@ -75,46 +74,26 @@ final class DetailViewController: UIViewController {
     }
     
     private let apiService: APIServiceProtocol = APIService(networkManager: NetworkManager(jsonService: JSONDecoderManager()))
+    private lazy var userDefaultsManager: UserDefaultsManagerProtocol = UserDefaultsManager(apiService: apiService)
+    
+    private var idValue: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.isNavigationBarHidden = false
         LoadingOverlay.shared.showOverlay(view: mainImageView)
         setupViewController()
     }
     
-    var detailModel: DetailResponseModel?
-    var savedProducts: [DetailResponseModel] = []
-    
-	@objc private func didTapbookmarkButton() {
-		// Save the detailModels to UserDefaults
-		let defaults = UserDefaults.standard
-		
-		let encoder = JSONEncoder()
-		do {
-			let encodedData = try encoder.encode(detailModel)
-			guard let element = detailModel?.id else {
-				return
-			}
-			var currentArrayId = UserDefaults.standard.object(forKey: "userFavorite") as? [Int] ?? [element]
-			if !currentArrayId.contains(element) {
-				currentArrayId.append(element)
-			} else {
-				currentArrayId.remove(at: currentArrayId.firstIndex(of: element)!)
-			}
-			defaults.set(currentArrayId, forKey: "userFavorite")
-			print(UserDefaults.standard.array(forKey: "userFavorite"))
-			//                bookmarkButton.isSelected = true
-			print("Data saved to UserDefaults.")
-		} catch {
-			print("Error encoding data: \(error)")
-		}
-	}
-        
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         LoadingOverlay.shared.hideOverlayView()
     }
     
+	@objc private func didTapbookmarkButton() {
+        userDefaultsManager.setUserDefaults(with: idValue)
+	}
+        
     @objc
     private func didTapMoreButton() {
         routeToMoreInfoVC(with: indexValue)
@@ -123,13 +102,17 @@ final class DetailViewController: UIViewController {
     func configureDetailViewController(with index: Int) {
         Task {
             do {
-                let detailModel = try await apiService.fetchDetailAsync(id: index)
-                configureDetailViews(with: detailModel)
-                detailView.configureDetailTableView(with: detailModel)
-//                savedProducts = detailModel
-//                savedProducts.append(detailModel)
-				self.detailModel = detailModel
-                print(savedProducts)
+                let model = try await apiService.fetchDetail(id: index)
+                idValue = index
+                let detailTopViewModel = DetailTopViewModel(id: model.id,
+                                                            title: model.title,
+                                                            readyInMinutes: model.readyInMinutes,
+                                                            image: model.image,
+                                                            servings: model.servings,
+                                                            nutrition: model.nutrition
+                )
+                configureDetailViews(with: detailTopViewModel)
+                detailView.configureDetailTableView(with: model)
             } catch {
                 await MainActor.run(body: {
                     print(error, error.localizedDescription)
@@ -139,7 +122,6 @@ final class DetailViewController: UIViewController {
     }
 }
 
-
 extension DetailViewController {
     func routeToMoreInfoVC(with id: Int) {
         let viewController = MoreInfoViewController()
@@ -147,7 +129,7 @@ extension DetailViewController {
         present(viewController, animated: true)
     }
     
-    func configureDetailViews(with model: DetailResponseModel) {
+    func configureDetailViews(with model: DetailTopViewModel) {
         guard let kcalValue = model.nutrition?.nutrients[.zero].amount else { return }
         guard let kcalUnit = model.nutrition?.nutrients[.zero].unit else { return }
         indexValue = model.id

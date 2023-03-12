@@ -21,7 +21,7 @@ final class DetailView: UIView {
         return tableView
     }()
         
-    var detailViewModel: [DetailViewModel] = []
+    var detailCellViewModels: [DetailCellViewModel] = []
         
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -32,9 +32,13 @@ final class DetailView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureDetailTableView(with model: DetailResponseModel) {
-        detailViewModel = model.extendedIngredients.map({ elem in
-                .init(nameClean: elem.nameClean, amount: elem.amount, unit: elem.unit, isSelected: false)
+    func configureDetailTableView(with model: ResponseModel) {
+        detailCellViewModels = model.extendedIngredients.map({
+                .init(nameClean: $0.nameClean,
+                      amount: $0.amount,
+                      unit: $0.unit,
+                      isSelected: false
+                )
         })
         tableView.reloadData()
     }
@@ -42,10 +46,10 @@ final class DetailView: UIView {
 
 extension DetailView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if detailViewModel[indexPath.item].isSelected {
-            detailViewModel[indexPath.item].isSelected = false
+        if detailCellViewModels[indexPath.item].isSelected {
+            detailCellViewModels[indexPath.item].isSelected = false
         } else {
-            detailViewModel[indexPath.item].isSelected = true
+            detailCellViewModels[indexPath.item].isSelected = true
         }
         tableView.reloadData()
     }
@@ -53,13 +57,12 @@ extension DetailView: UITableViewDelegate {
 
 extension DetailView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return detailViewModel.count
-
+        return detailCellViewModels.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as! DetailTableViewCell
-        let model = detailViewModel[indexPath.item]
+        let model = detailCellViewModels[indexPath.item]
         cell.selectionStyle = .none
         cell.configureCell(with: model)
         return cell

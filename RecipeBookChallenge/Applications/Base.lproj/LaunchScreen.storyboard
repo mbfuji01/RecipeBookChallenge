@@ -20,13 +20,31 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="startBackground" translatesAutoresizingMaskIntoConstraints="NO" id="U3c-2f-aAY">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SWIFT MARATHON 6.0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SKa-w5-gSy">
+                                <rect key="frame" x="20" y="765" width="353" height="33"/>
+                                <fontDescription key="fontDescription" type="system" weight="black" pointSize="27"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Team#8" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J65-Jk-K4Z">
+                                <rect key="frame" x="20" y="798" width="353" height="33"/>
+                                <fontDescription key="fontDescription" type="system" weight="black" pointSize="27"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="U3c-2f-aAY" secondAttribute="trailing" id="2OQ-XE-g8Z"/>
+                            <constraint firstItem="J65-Jk-K4Z" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="2sL-2n-ETE"/>
                             <constraint firstAttribute="bottom" secondItem="U3c-2f-aAY" secondAttribute="bottom" id="3yg-YA-70i"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="J65-Jk-K4Z" secondAttribute="trailing" constant="20" id="Dlp-7q-VvQ"/>
                             <constraint firstItem="U3c-2f-aAY" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="ITC-9t-1KV"/>
+                            <constraint firstItem="SKa-w5-gSy" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="Kim-2b-axt"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="SKa-w5-gSy" secondAttribute="trailing" constant="20" id="KmQ-wU-MBX"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="SKa-w5-gSy" secondAttribute="bottom" constant="20" id="Y6P-6f-p6C"/>
+                            <constraint firstItem="J65-Jk-K4Z" firstAttribute="top" secondItem="SKa-w5-gSy" secondAttribute="bottom" id="aHx-or-c2h"/>
                             <constraint firstItem="U3c-2f-aAY" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="r8K-Az-uIm"/>
                         </constraints>
                     </view>

@@ -72,7 +72,7 @@ private extension CategoriesViewController {
         Task(priority: .userInitiated) {
             do {
                 //получаем модель по названию категории, содержащую 10 рецептов из выбранной категории
-                let categoryRecipes = try await apiService.fetchByCategoriesAsync(with: categoryName)
+                let categoryRecipes = try await apiService.fetchByCategories(with: categoryName)
                     routeToGenlViewController(with: categoryRecipes, with: index)
             } catch {
                 await MainActor.run(body: {
